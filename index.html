@@ -765,14 +765,16 @@ function runMerge() {
   mergeFiles.forEach((f, fi) => {
     if (separator && fi > 0) allLines.push(`# ── ${f.name} ──`);
     f.lines.forEach(l => {
-      let line = trim ? l.trim() : l;
+      let line = l.replace(/
+$/, ''); // strip 
+ Windows
+      if (trim) line = line.trim();
       if (lower) line = line.toLowerCase();
+      if (skipEmpty && line.trim() === '') return; // bỏ ngay inline
       total++;
       allLines.push(line);
     });
   });
-
-  if (skipEmpty) allLines = allLines.filter(l => l.trim() !== '' || l.startsWith('#'));
   if (dedup) {
     const seen = new Set();
     allLines = allLines.filter(l => {
