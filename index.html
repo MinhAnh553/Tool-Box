@@ -765,9 +765,7 @@ function runMerge() {
   mergeFiles.forEach((f, fi) => {
     if (separator && fi > 0) allLines.push(`# ── ${f.name} ──`);
     f.lines.forEach(l => {
-      let line = l.replace(/
-$/, ''); // strip 
- Windows
+      let line = l.replace(/[\r]+$/, '')
       if (trim) line = line.trim();
       if (lower) line = line.toLowerCase();
       if (skipEmpty && line.trim() === '') return; // bỏ ngay inline
