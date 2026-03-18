@@ -685,7 +685,10 @@ async function addMergeFiles(fileList) {
   renderMergeList();
 }
 
-mergeFileInput.addEventListener('change', () => { addMergeFiles(mergeFileInput.files); mergeFileInput.value = ''; });
+mergeFileInput.addEventListener('change', () => {
+  const files = Array.from(mergeFileInput.files);
+  addMergeFiles(files).then(() => { mergeFileInput.value = ''; });
+});
 
 mergeDropArea.addEventListener('dragover', e => { e.preventDefault(); mergeDropArea.classList.add('drag-over'); });
 mergeDropArea.addEventListener('dragleave', () => mergeDropArea.classList.remove('drag-over'));
