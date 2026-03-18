@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Toolbox // IG + Matcher</title>
+  <title>Toolbox // Matcher + Merge</title>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@400;600;700;900&display=swap" rel="stylesheet"/>
   <style>
     :root {
@@ -15,8 +15,6 @@
       --accent2:  #0af;
       --warn:     #ffb020;
       --danger:   #ff4560;
-      --ig:       #e1306c;
-      --ig2:      #f77737;
       --text:     #c8d0dc;
       --muted:    #4a5568;
       --mono:     'Share Tech Mono', monospace;
@@ -38,7 +36,6 @@
     header{text-align:center;margin-bottom:32px}
     .logo-line{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:6px;text-transform:uppercase;margin-bottom:10px}
     h1{font-size:clamp(28px,5vw,48px);font-weight:900;color:#fff;letter-spacing:-1px;text-transform:uppercase}
-    h1 .t1{color:var(--ig)}
     h1 .t2{color:var(--accent2)}
     .sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:6px;letter-spacing:3px}
 
@@ -59,10 +56,7 @@
       content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
       background:transparent;transition:background 0.2s;
     }
-    .tab-btn.active{background:var(--surface);color:#fff}
-    .tab-btn.tab-ig.active::after{background:linear-gradient(90deg,var(--ig),var(--ig2))}
-    .tab-btn.tab-ig.active{color:var(--ig)}
-    .tab-btn.tab-matcher.active::after{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+    .tab-btn.active{background:var(--surface);color:#fff}.tab-btn.tab-matcher.active::after{background:linear-gradient(90deg,var(--accent),var(--accent2))}
     .tab-btn.tab-matcher.active{color:var(--accent)}
     .tab-dot{width:8px;height:8px;border-radius:50%;background:currentColor;opacity:0.7}
 
@@ -81,101 +75,18 @@
       content:'';position:absolute;top:0;left:0;right:0;height:2px;
       background:linear-gradient(90deg,var(--accent),var(--accent2));
     }
-    .card.ig-top::before{background:linear-gradient(90deg,var(--ig),var(--ig2))}
-    .card.warn-top::before{background:linear-gradient(90deg,var(--warn),#ff8c00)}
+    .card
+.card.warn-top::before{background:linear-gradient(90deg,var(--warn),#ff8c00)}
 
     .section-label{
       font-family:var(--mono);font-size:10px;letter-spacing:4px;
       color:var(--accent);text-transform:uppercase;margin-bottom:16px;
       display:flex;align-items:center;justify-content:space-between;
     }
-    .section-label.ig{color:var(--ig)}
     .section-label.warn{color:var(--warn)}
 
-    /* ── INSTAGRAM PANEL ── */
-    .ig-input-wrap{position:relative;margin-bottom:12px}
-    textarea#igInput{
-      width:100%;height:120px;background:var(--surface2);
-      border:1px solid var(--border);border-radius:4px;
-      color:var(--text);font-family:var(--mono);font-size:12px;
-      padding:12px 14px;resize:vertical;outline:none;transition:border-color 0.15s;
-    }
-    textarea#igInput:focus{border-color:var(--ig)}
-    .ig-hint{font-size:11px;color:var(--muted);margin-bottom:8px;font-family:var(--mono)}
-
-    .ig-or-divider{
-      display:flex;align-items:center;gap:10px;margin:10px 0;
-      font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:3px;
-    }
-    .ig-or-divider::before,.ig-or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
-
-    .ig-drop-zone{
-      border:1px dashed var(--border);border-radius:4px;padding:16px;
-      text-align:center;cursor:pointer;transition:all 0.2s;position:relative;background:var(--bg);
-      margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:12px;
-    }
-    .ig-drop-zone:hover,.ig-drop-zone.drag-over{border-color:var(--ig);background:rgba(225,48,108,0.04)}
-    .ig-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-    .ig-drop-icon{font-size:20px}
-    .ig-drop-info{text-align:left}
-    .ig-drop-title{font-weight:700;font-size:13px;color:#fff}
-    .ig-drop-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
-    .ig-file-badge{
-      display:inline-flex;align-items:center;gap:6px;margin-top:6px;
-      background:rgba(225,48,108,0.12);border:1px solid rgba(225,48,108,0.3);
-      border-radius:3px;padding:3px 10px;font-family:var(--mono);font-size:11px;color:var(--ig);
-    }
-    .ig-file-badge .rm-file{cursor:pointer;color:var(--muted);font-size:14px;margin-left:4px}
-    .ig-file-badge .rm-file:hover{color:var(--danger)}
-
-    .ig-stats{display:none;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-    .ig-stat{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center}
-    .ig-stat-num{font-family:var(--mono);font-size:22px;font-weight:700}
-    .ig-stat-num.live{color:var(--accent)}
-    .ig-stat-num.dead{color:var(--danger)}
-    .ig-stat-num.total{color:var(--accent2)}
-    .ig-stat-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
-
-    .ig-results-wrap{display:none;margin-top:14px}
-    .ig-output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
-    .ig-dl-btns{display:flex;gap:6px;flex-wrap:wrap}
-    .ig-result-list{
-      max-height:320px;overflow-y:auto;background:var(--bg);
-      border:1px solid var(--border);border-radius:4px;padding:10px;
-    }
-    .ig-result-list::-webkit-scrollbar{width:4px}
-    .ig-result-list::-webkit-scrollbar-track{background:transparent}
-    .ig-result-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-
-    .ig-row{
-      display:flex;align-items:center;gap:10px;padding:7px 8px;
-      border-radius:3px;margin-bottom:2px;font-family:var(--mono);font-size:12px;
-      border-left:2px solid transparent;
-    }
-    .ig-row.live{border-left-color:var(--accent);background:rgba(0,229,160,0.04)}
-    .ig-row.dead{border-left-color:var(--danger);background:rgba(255,69,96,0.04)}
-    .ig-row.rate{border-left-color:var(--warn);background:rgba(255,176,32,0.04)}
-    .ig-row.other{border-left-color:var(--muted);background:rgba(255,255,255,0.02)}
-    .ig-row .badge{
-      font-size:9px;letter-spacing:1px;padding:2px 6px;border-radius:2px;
-      text-transform:uppercase;white-space:nowrap;font-weight:700;min-width:70px;text-align:center;
-    }
-    .ig-row.live .badge{background:rgba(0,229,160,0.15);color:var(--accent)}
-    .ig-row.dead .badge{background:rgba(255,69,96,0.15);color:var(--danger)}
-    .ig-row.rate .badge{background:rgba(255,176,32,0.15);color:var(--warn)}
-    .ig-row.other .badge{background:rgba(255,255,255,0.06);color:var(--muted)}
-    .ig-row .uname{color:#fff;flex:1}
-    .ig-row .tags{display:flex;gap:5px}
-    .ig-row .tag{font-size:9px;padding:1px 5px;border-radius:2px;
-      background:rgba(0,170,255,0.1);color:var(--accent2);border:1px solid rgba(0,170,255,0.2)}
-
     /* ── live progress bar ── */
-    .progress-bar-wrap{display:none;margin:12px 0}
-    .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-    .progress-fill{height:100%;background:linear-gradient(90deg,var(--ig),var(--ig2));width:0%;transition:width 0.3s}
-    .progress-text{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:5px}
-
-    /* ── MATCHER PANEL (preserved from original) ── */
+/* ── MATCHER PANEL (preserved from original) ── */
     .toggle-btn{
       font-family:var(--mono);font-size:10px;letter-spacing:2px;padding:4px 12px;
       border-radius:3px;cursor:pointer;border:1px solid var(--border);
@@ -272,7 +183,70 @@
       padding:12px 16px;font-family:var(--mono);font-size:12px;color:var(--danger);margin-top:16px;display:none;
     }
 
-    /* ── SHARED BUTTON ── */
+    .tab-btn.tab-merge.active::after{background:linear-gradient(90deg,#a855f7,#ec4899)}
+    .tab-btn.tab-merge.active{color:#a855f7}
+
+    /* ── MERGE PANEL ── */
+    .merge-drop-area{
+      border:2px dashed var(--border);border-radius:6px;padding:28px 20px;
+      text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);
+      position:relative;margin-bottom:16px;
+    }
+    .merge-drop-area:hover,.merge-drop-area.drag-over{border-color:#a855f7;background:rgba(168,85,247,0.04)}
+    .merge-drop-area input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .merge-drop-icon{font-size:28px;margin-bottom:8px}
+    .merge-drop-title{font-weight:700;font-size:14px;color:#fff;margin-bottom:4px}
+    .merge-drop-sub{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+    .merge-file-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;min-height:0}
+    .merge-file-item{
+      display:flex;align-items:center;gap:10px;
+      background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+      padding:10px 14px;font-family:var(--mono);font-size:12px;
+      cursor:grab;transition:all 0.15s;
+    }
+    .merge-file-item:active{cursor:grabbing}
+    .merge-file-item.dragging{opacity:0.4;border-style:dashed}
+    .merge-file-item.drag-target{border-color:#a855f7;background:rgba(168,85,247,0.08)}
+    .merge-file-item .drag-handle{color:var(--muted);font-size:14px;cursor:grab;padding:0 4px;user-select:none}
+    .merge-file-item .f-idx{
+      font-size:9px;color:#000;background:#a855f7;border-radius:2px;
+      padding:2px 6px;font-weight:700;min-width:20px;text-align:center;
+    }
+    .merge-file-item .f-name{flex:1;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .merge-file-item .f-lines{color:var(--muted);font-size:10px;white-space:nowrap}
+    .merge-file-item .f-rm{
+      color:var(--muted);cursor:pointer;font-size:16px;line-height:1;
+      padding:0 2px;transition:color 0.1s;
+    }
+    .merge-file-item .f-rm:hover{color:var(--danger)}
+
+    .merge-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+    @media(max-width:600px){.merge-options{grid-template-columns:1fr 1fr}}
+    .merge-opt{
+      display:flex;align-items:center;gap:8px;
+      background:var(--surface2);border:1px solid var(--border);border-radius:4px;
+      padding:12px 14px;cursor:pointer;transition:all 0.15s;
+    }
+    .merge-opt:hover{border-color:#a855f7}
+    .merge-opt.active{border-color:#a855f7;background:rgba(168,85,247,0.08)}
+    .merge-opt input[type=checkbox]{display:none}
+    .merge-opt-icon{font-size:16px}
+    .merge-opt-label{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--text)}
+    .merge-opt-check{
+      margin-left:auto;width:14px;height:14px;border-radius:2px;
+      border:1px solid var(--muted);display:flex;align-items:center;justify-content:center;
+      font-size:10px;transition:all 0.15s;
+    }
+    .merge-opt.active .merge-opt-check{background:#a855f7;border-color:#a855f7;color:#000}
+
+    .merge-stats-bar{display:none;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+    .merge-stat{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center}
+    .merge-stat-num{font-family:var(--mono);font-size:22px;font-weight:700;color:#a855f7}
+    .merge-stat-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+    .btn.merge-btn{background:#a855f7}
+    .btn.merge-btn:hover:not(:disabled){background:#c084fc;box-shadow:0 0 24px rgba(168,85,247,0.35)}
+    .card.merge-top::before{background:linear-gradient(90deg,#a855f7,#ec4899)}
     .btn{
       display:block;width:100%;padding:14px;
       background:var(--accent);color:#000;border:none;border-radius:4px;
@@ -281,10 +255,9 @@
     }
     .btn:hover:not(:disabled){background:#00ffb3;transform:translateY(-1px);box-shadow:0 0 24px rgba(0,229,160,0.35)}
     .btn:disabled{opacity:0.4;cursor:not-allowed}
-    .btn.ig-btn{background:var(--ig)}
-    .btn.ig-btn:hover:not(:disabled){background:#ff5a85;box-shadow:0 0 24px rgba(225,48,108,0.35)}
-
-    .spinner{
+    .btn
+.btn
+.spinner{
       display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.3);
       border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:7px;
     }
@@ -294,76 +267,23 @@
 <body>
 
 <header>
-  <div class="logo-line">// data processing toolbox v2 //</div>
-  <h1><span class="t1">IG</span> + <span class="t2">Matcher</span></h1>
-  <div class="sub">instagram checker &amp; email cross-reference engine</div>
+  <div class="logo-line">// data processing toolbox v3 //</div>
+  <h1><span class="t2">Matcher</span> + <span style="color:#a855f7">Merge</span></h1>
+  <div class="sub">email matcher &amp; file merger</div>
 </header>
 
 <!-- TAB BAR -->
 <div class="tab-bar">
-  <button class="tab-btn tab-ig active" onclick="switchTab('ig')">
-    <div class="tab-dot"></div> Instagram Checker
-  </button>
   <button class="tab-btn tab-matcher" onclick="switchTab('matcher')">
     <div class="tab-dot"></div> File Matcher
   </button>
-</div>
-
-<!-- ══════════════ INSTAGRAM PANEL ══════════════ -->
-<div class="panel active" id="panel-ig">
-  <div class="card ig-top">
-    <div class="section-label ig">// nhập danh sách username</div>
-
-    <div class="ig-hint">Gõ trực tiếp — mỗi username 1 dòng (@ không bắt buộc)</div>
-    <textarea id="igInput" placeholder="cristiano&#10;therock&#10;nasa&#10;leomessi&#10;..."></textarea>
-
-    <div class="ig-or-divider">hoặc upload file</div>
-
-    <div class="ig-drop-zone" id="igDropZone">
-      <input type="file" id="igFile" accept=".txt,.csv"/>
-      <div class="ig-drop-icon">📂</div>
-      <div class="ig-drop-info">
-        <div class="ig-drop-title">Upload file username</div>
-        <div class="ig-drop-sub">.txt hoặc .csv — 1 username mỗi dòng</div>
-        <div id="igFileBadge" style="display:none">
-          <span class="ig-file-badge" id="igFileNameBadge">
-            <span id="igFileName">file.txt</span>
-            <span class="rm-file" onclick="removeIGFile(event)">×</span>
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <div class="progress-bar-wrap" id="igProgress">
-      <div class="progress-track"><div class="progress-fill" id="igFill"></div></div>
-      <div class="progress-text" id="igProgressText">0 / 0</div>
-    </div>
-
-    <div class="ig-stats" id="igStats">
-      <div class="ig-stat"><div class="ig-stat-num total" id="igTotal">0</div><div class="ig-stat-label">Total</div></div>
-      <div class="ig-stat"><div class="ig-stat-num live" id="igLive">0</div><div class="ig-stat-label">Live ✓</div></div>
-      <div class="ig-stat"><div class="ig-stat-num dead" id="igDead">0</div><div class="ig-stat-label">Not Found ✗</div></div>
-    </div>
-
-    <button class="btn ig-btn" id="igBtn" onclick="runIG()">⚡ &nbsp;Kiểm Tra Instagram</button>
-
-    <div class="ig-results-wrap" id="igResultsWrap">
-      <div class="ig-output-header">
-        <div class="section-label ig" style="margin-bottom:0">// kết quả</div>
-        <div class="ig-dl-btns">
-          <button class="btn-copy" onclick="copyIG()">Copy Live</button>
-          <button class="btn-dl" style="background:var(--accent);border-color:var(--accent)" onclick="dlIGLive()">↓ Live</button>
-          <button class="btn-dl" style="background:var(--danger);border-color:var(--danger)" onclick="dlIGDie()">↓ Die</button>
-          <button class="btn-dl" onclick="dlIGAll()">↓ Tất cả</button>
-        </div>
-      </div>
-      <div class="ig-result-list" id="igResultList"></div>
-    </div>
-  </div>
+  <button class="tab-btn tab-merge" onclick="switchTab('merge')">
+    <div class="tab-dot"></div> Gộp File
+  </button>
 </div>
 
 <!-- ══════════════ MATCHER PANEL ══════════════ -->
-<div class="panel" id="panel-matcher">
+<div class="panel active" id="panel-matcher">
   <!-- CONFIG CARD -->
   <div class="card warn-top">
     <div class="section-label warn">
@@ -463,6 +383,82 @@
   </div>
 </div>
 
+<!-- ══════════════ MERGE PANEL ══════════════ -->
+<div class="panel" id="panel-merge">
+  <div class="card merge-top">
+    <div class="section-label" style="color:#a855f7">// 01 — thêm file cần gộp</div>
+
+    <div class="merge-drop-area" id="mergeDropArea">
+      <input type="file" id="mergeFileInput" accept=".txt,.csv" multiple/>
+      <div class="merge-drop-icon">📁</div>
+      <div class="merge-drop-title">Kéo thả hoặc click để chọn nhiều file</div>
+      <div class="merge-drop-sub">.txt hoặc .csv — có thể chọn nhiều file cùng lúc</div>
+    </div>
+
+    <div class="section-label" style="color:#a855f7;margin-bottom:8px">// 02 — thứ tự gộp <span style="color:var(--muted);font-size:9px">(kéo để sắp xếp)</span></div>
+    <div class="merge-file-list" id="mergeFileList">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px;text-align:center" id="mergeEmptyHint">
+        Chưa có file nào — thêm file ở trên
+      </div>
+    </div>
+  </div>
+
+  <div class="card merge-top">
+    <div class="section-label" style="color:#a855f7">// 03 — tùy chọn</div>
+    <div class="merge-options">
+      <div class="merge-opt active" id="optDedup" onclick="toggleMergeOpt('optDedup')">
+        <span class="merge-opt-icon">🔁</span>
+        <span class="merge-opt-label">Loại dòng trùng</span>
+        <span class="merge-opt-check">✓</span>
+      </div>
+      <div class="merge-opt" id="optSort" onclick="toggleMergeOpt('optSort')">
+        <span class="merge-opt-icon">🔤</span>
+        <span class="merge-opt-label">Sắp xếp A→Z</span>
+        <span class="merge-opt-check"></span>
+      </div>
+      <div class="merge-opt" id="optTrim" onclick="toggleMergeOpt('optTrim')">
+        <span class="merge-opt-icon">✂️</span>
+        <span class="merge-opt-label">Trim khoảng trắng</span>
+        <span class="merge-opt-check"></span>
+      </div>
+      <div class="merge-opt active" id="optSkipEmpty" onclick="toggleMergeOpt('optSkipEmpty')">
+        <span class="merge-opt-icon">🚫</span>
+        <span class="merge-opt-label">Bỏ dòng trống</span>
+        <span class="merge-opt-check">✓</span>
+      </div>
+      <div class="merge-opt" id="optLower" onclick="toggleMergeOpt('optLower')">
+        <span class="merge-opt-icon">🔡</span>
+        <span class="merge-opt-label">Chuyển thường</span>
+        <span class="merge-opt-check"></span>
+      </div>
+      <div class="merge-opt" id="optSeparator" onclick="toggleMergeOpt('optSeparator')">
+        <span class="merge-opt-icon">📌</span>
+        <span class="merge-opt-label">Thêm divider</span>
+        <span class="merge-opt-check"></span>
+      </div>
+    </div>
+
+    <button class="btn merge-btn" id="mergeBtn" onclick="runMerge()" disabled>⚡ &nbsp;Gộp File</button>
+
+    <div class="merge-stats-bar" id="mergeStatsBar">
+      <div class="merge-stat"><div class="merge-stat-num" id="mTotal">0</div><div class="merge-stat-label">Tổng dòng</div></div>
+      <div class="merge-stat"><div class="merge-stat-num" id="mDedup" style="color:var(--accent)">0</div><div class="merge-stat-label">Sau dedup</div></div>
+      <div class="merge-stat"><div class="merge-stat-num" id="mFiles" style="color:var(--accent2)">0</div><div class="merge-stat-label">Số file</div></div>
+    </div>
+  </div>
+
+  <div class="card merge-top" id="mergeOutputCard" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="section-label" style="color:#a855f7;margin-bottom:0">// 04 — kết quả</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-copy" onclick="copyMerge()">Copy</button>
+        <button class="btn-dl" style="background:#a855f7;border-color:#a855f7" onclick="dlMerge()">↓ Download</button>
+      </div>
+    </div>
+    <textarea id="mergeOutput" readonly style="width:100%;height:260px;background:#07090b;border:1px solid var(--border);border-radius:4px;color:#c084fc;font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;"></textarea>
+  </div>
+</div>
+
 <script>
 // ── TAB SWITCH ────────────────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -472,171 +468,18 @@ function switchTab(tab) {
   document.querySelector('.tab-' + tab).classList.add('active');
 }
 
-// ── INSTAGRAM CHECKER ─────────────────────────────────────────────────────────
-let igResults = [];
-
-// File upload handling
-const igFileInput = document.getElementById('igFile');
-const igDropZone  = document.getElementById('igDropZone');
-
-igFileInput.addEventListener('change', () => {
-  const f = igFileInput.files[0];
-  if (!f) return;
-  showIGFileBadge(f.name);
-  const reader = new FileReader();
-  reader.onload = e => {
-    const lines = e.target.result.split('\n').map(l => l.replace(/^@/,'').trim()).filter(Boolean);
-    document.getElementById('igInput').value = lines.join('\n');
-  };
-  reader.readAsText(f);
-});
-
-igDropZone.addEventListener('dragover',  e => { e.preventDefault(); igDropZone.classList.add('drag-over'); });
-igDropZone.addEventListener('dragleave', () => igDropZone.classList.remove('drag-over'));
-igDropZone.addEventListener('drop',      e => {
-  igDropZone.classList.remove('drag-over');
-  const f = e.dataTransfer?.files?.[0];
-  if (f && (f.name.endsWith('.txt') || f.name.endsWith('.csv'))) {
-    showIGFileBadge(f.name);
-    const reader = new FileReader();
-    reader.onload = ev => {
-      const lines = ev.target.result.split('\n').map(l => l.replace(/^@/,'').trim()).filter(Boolean);
-      document.getElementById('igInput').value = lines.join('\n');
-    };
-    reader.readAsText(f);
-  }
-});
-
-function showIGFileBadge(name) {
-  document.getElementById('igFileName').textContent = name;
-  document.getElementById('igFileBadge').style.display = 'block';
-}
-function removeIGFile(e) {
-  e.stopPropagation();
-  igFileInput.value = '';
-  document.getElementById('igFileBadge').style.display = 'none';
-}
-
-async function runIG() {
-  const raw = document.getElementById('igInput').value.trim();
-  if (!raw) return;
-
-  const usernames = [...new Set(
-    raw.split('\n').map(u => u.replace(/^@/, '').trim()).filter(Boolean)
-  )];
-
-  const btn = document.getElementById('igBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Đang kiểm tra...';
-
-  igResults = [];
-  document.getElementById('igResultList').innerHTML = '';
-  document.getElementById('igStats').style.display = 'none';
-  document.getElementById('igResultsWrap').style.display = 'none';
-
-  const prog     = document.getElementById('igProgress');
-  const fill     = document.getElementById('igFill');
-  const progText = document.getElementById('igProgressText');
-  prog.style.display = 'block';
-  fill.style.width = '0%';
-
-  let live = 0, dead = 0, total = usernames.length;
-
-  // Hiện stats ngay
-  document.getElementById('igTotal').textContent = total;
-  document.getElementById('igLive').textContent  = 0;
-  document.getElementById('igDead').textContent  = 0;
-  document.getElementById('igStats').style.display = 'grid';
-  document.getElementById('igResultsWrap').style.display = 'block';
-
-  await new Promise((resolve) => {
-    const qs  = encodeURIComponent(usernames.join(','));
-    const es  = new EventSource(`/check-instagram-stream?usernames=${qs}`);
-
-    es.onmessage = (e) => {
-      const msg = JSON.parse(e.data);
-
-      if (msg.type === 'result') {
-        igResults.push(msg);
-        if (msg.status === 'LIVE') live++;
-        else if (msg.status === 'NOT_FOUND') dead++;
-        appendIGRow(msg);
-
-        const done = msg.index + 1;
-        const pct  = Math.round(done / total * 100);
-        fill.style.width     = pct + '%';
-        progText.textContent = `${done} / ${total} — đang kiểm tra: ${msg.username}`;
-        document.getElementById('igTotal').textContent = done;
-        document.getElementById('igLive').textContent  = live;
-        document.getElementById('igDead').textContent  = dead;
-
-        // Scroll xuống cuối list
-        const list = document.getElementById('igResultList');
-        list.scrollTop = list.scrollHeight;
-      }
-
-      if (msg.type === 'done') {
-        es.close();
-        resolve();
-      }
-    };
-
-    es.onerror = () => { es.close(); resolve(); };
-  });
-
-  prog.style.display = 'none';
-  progText.textContent = `Hoàn tất ${total} tài khoản`;
-  btn.innerHTML = '⚡ &nbsp;Kiểm Tra Instagram';
-  btn.disabled  = false;
-}
-
-function appendIGRow(r) {
-  const list = document.getElementById('igResultList');
-  const div  = document.createElement('div');
-  let cls = 'other', badgeText = r.status;
-  if (r.status === 'LIVE')         { cls = 'live'; badgeText = r.private ? 'LIVE PRIVATE' : 'LIVE PUBLIC'; }
-  else if (r.status === 'NOT_FOUND') { cls = 'dead'; badgeText = 'NOT FOUND'; }
-  else if (r.status === 'RATE_LIMITED') { cls = 'rate'; badgeText = 'RATE LIMIT'; }
-  const tags = [];
-  if (r.verified) tags.push('<span class="tag">✓ Verified</span>');
-  if (r.private)  tags.push('<span class="tag">🔒 Private</span>');
-  div.className = `ig-row ${cls}`;
-  div.innerHTML = `<span class="badge">${badgeText}</span><span class="uname">${r.username}</span><span class="tags">${tags.join('')}</span>`;
-  list.appendChild(div);
-}
-
-function dlBlob(content, filename) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
-  a.download = filename; a.click();
-}
-
-function copyIG() {
-  const live = igResults.filter(r => r.status === 'LIVE').map(r => r.username).join('\n');
-  navigator.clipboard.writeText(live);
-  const btn = document.querySelector('.ig-dl-btns .btn-copy');
-  btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy Live', 1500);
-}
-function dlIGLive() {
-  dlBlob(igResults.filter(r => r.status === 'LIVE').map(r => r.username).join('\n'), 'ig_live.txt');
-}
-function dlIGDie() {
-  dlBlob(igResults.filter(r => r.status === 'NOT_FOUND').map(r => r.username).join('\n'), 'ig_die.txt');
-}
-function dlIGAll() {
-  const lines = igResults.map(r => {
-    let label = r.status;
-    if (r.status === 'LIVE') label = r.private ? 'LIVE_PRIVATE' : 'LIVE_PUBLIC';
-    return `[${label}] ${r.username}`;
-  }).join('\n');
-  dlBlob(lines, 'ig_all.txt');
-}
-
 // ── FILE MATCHER ──────────────────────────────────────────────────────────────
+const DEFAULT_CFG = {
+  file1Separator: '|', file1Fields: ['username','password','2fa','email','pass_email'],
+  file1EmailIndex: 3,  file2Separator: '|', file2EmailIndex: 0,
+  outputFormat: '|{username}|{password}|{2fa}|{email}|{pass_email}|'
+};
 let cfg = {};
 
-async function loadConfig() {
-  const r = await fetch('/config'); cfg = await r.json(); applyConfigToUI();
+function loadConfig() {
+  try { cfg = JSON.parse(localStorage.getItem('toolbox_cfg') || 'null') || { ...DEFAULT_CFG }; }
+  catch { cfg = { ...DEFAULT_CFG }; }
+  applyConfigToUI();
 }
 
 function applyConfigToUI() {
@@ -695,21 +538,20 @@ function updateLabels() {
 function updatePreview() {
   const fmt = cfg.outputFormat || '', fields = cfg.file1Fields || [];
   if (!fmt) { document.getElementById('fmtPreview').innerHTML = '<span style="color:var(--muted)">Chưa có format</span>'; return; }
-  let html = fmt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let html = fmt.replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/\x3e/g,'&gt;');
   fields.forEach(f => { html = html.split(`{${f}}`).join(`<span style="color:var(--warn)">{${f}}</span>`); });
   html = html.replace(/\{(\d+)\}/g, '<span style="color:var(--warn)">{$1}</span>');
   document.getElementById('fmtPreview').innerHTML = html;
 }
 
-document.getElementById('saveCfgBtn').addEventListener('click', async () => {
+document.getElementById('saveCfgBtn').addEventListener('click', () => {
   cfg.file1Separator  = document.getElementById('sep1').value || '|';
   cfg.file2Separator  = document.getElementById('sep2').value || '|';
   cfg.file1EmailIndex = parseInt(document.getElementById('emailIdx1').value) || 0;
   cfg.file2EmailIndex = parseInt(document.getElementById('emailIdx2').value) || 0;
   cfg.outputFormat    = document.getElementById('outputFmt').value;
-  const r = await fetch('/config', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(cfg) });
-  const d = await r.json();
-  if (d.success) { const ok = document.getElementById('saveOk'); ok.classList.add('show'); setTimeout(() => ok.classList.remove('show'), 2500); }
+  localStorage.setItem('toolbox_cfg', JSON.stringify(cfg));
+  const ok = document.getElementById('saveOk'); ok.classList.add('show'); setTimeout(() => ok.classList.remove('show'), 2500);
 });
 
 document.getElementById('toggleCfg').addEventListener('click', () => {
@@ -732,28 +574,69 @@ file2Input.addEventListener('change', () => { document.getElementById('fname2').
   el.addEventListener('drop', () => el.classList.remove('drag-over'));
 });
 
-processBtn.addEventListener('click', async () => {
+processBtn.addEventListener('click', () => {
   document.getElementById('errorBox').style.display = 'none';
   document.getElementById('outputSection').style.display = 'none';
   document.getElementById('statsBar').style.display = 'none';
   processBtn.disabled = true;
   processBtn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
-  const fd = new FormData();
-  fd.append('file1', file1Input.files[0]); fd.append('file2', file2Input.files[0]);
-  try {
-    const res = await fetch('/process', { method:'POST', body:fd });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error);
-    document.getElementById('s1').textContent = data.stats.file1Total;
-    document.getElementById('s2').textContent = data.stats.file2Total;
-    document.getElementById('sm').textContent = data.stats.matched;
-    document.getElementById('output').value = data.output || '(Không tìm thấy kết quả khớp)';
+
+  const readFile = f => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsText(f);
+  });
+
+  Promise.all([readFile(file1Input.files[0]), readFile(file2Input.files[0])]).then(([text1, text2]) => {
+    const sep1      = cfg.file1Separator  || '|';
+    const sep2      = cfg.file2Separator  || '|';
+    const emailIdx1 = parseInt(cfg.file1EmailIndex) || 0;
+    const emailIdx2 = parseInt(cfg.file2EmailIndex) || 0;
+    const fields    = cfg.file1Fields  || [];
+    const outputFmt = cfg.outputFormat || '';
+
+    const file1Lines = text1.split(/\r?\n/).filter(l => l.trim());
+    const file2Lines = text2.split(/\r?\n/).filter(l => l.trim());
+
+    const file1Map = {};
+    for (const line of file1Lines) {
+      const parts = line.split(sep1);
+      const email = (parts[emailIdx1] || '').trim().toLowerCase();
+      if (email) file1Map[email] = parts;
+    }
+
+    const file2Emails = new Set();
+    for (const line of file2Lines) {
+      const parts = line.split(sep2);
+      const email = (parts[emailIdx2] || '').trim().toLowerCase();
+      if (email) file2Emails.add(email);
+    }
+
+    const outputLines = [];
+    for (const email of file2Emails) {
+      if (file1Map[email]) {
+        const parts = file1Map[email];
+        let line = outputFmt;
+        fields.forEach((fieldName, i) => {
+          line = line.split(`{${fieldName}}`).join((parts[i] || '').trim());
+        });
+        parts.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
+        outputLines.push(line);
+      }
+    }
+
+    document.getElementById('s1').textContent = file1Lines.length;
+    document.getElementById('s2').textContent = file2Lines.length;
+    document.getElementById('sm').textContent = outputLines.length;
+    document.getElementById('output').value = outputLines.join('\n') || '(Không tìm thấy kết quả khớp)';
     document.getElementById('statsBar').style.display = 'grid';
     document.getElementById('outputSection').style.display = 'block';
-  } catch(e) {
+  }).catch(e => {
     const eb = document.getElementById('errorBox'); eb.textContent = '⚠ Lỗi: ' + e.message; eb.style.display = 'block';
-  }
-  processBtn.innerHTML = '⚡ &nbsp;Xử Lý'; processBtn.disabled = false;
+  }).finally(() => {
+    processBtn.innerHTML = '⚡ &nbsp;Xử Lý'; processBtn.disabled = false;
+  });
 });
 
 document.getElementById('copyBtn').addEventListener('click', () => {
@@ -765,6 +648,144 @@ document.getElementById('dlBtn').addEventListener('click', () => {
   a.href = URL.createObjectURL(new Blob([document.getElementById('output').value], { type:'text/plain' }));
   a.download = 'output_matched.txt'; a.click();
 });
+
+// ── FILE MERGER ───────────────────────────────────────────────────────────────
+let mergeFiles = []; // [{name, lines[]}]
+let mergeDragIdx = null;
+
+const mergeFileInput = document.getElementById('mergeFileInput');
+const mergeDropArea  = document.getElementById('mergeDropArea');
+
+function readFileLines(file) {
+  return new Promise(resolve => {
+    const r = new FileReader();
+    r.onload = e => resolve(e.target.result.split(/\r?\n/));
+    r.readAsText(file);
+  });
+}
+
+async function addMergeFiles(fileList) {
+  for (const file of fileList) {
+    if (!file.name.endsWith('.txt') && !file.name.endsWith('.csv')) continue;
+    const lines = await readFileLines(file);
+    mergeFiles.push({ name: file.name, lines });
+  }
+  renderMergeList();
+}
+
+mergeFileInput.addEventListener('change', () => { addMergeFiles(mergeFileInput.files); mergeFileInput.value = ''; });
+
+mergeDropArea.addEventListener('dragover', e => { e.preventDefault(); mergeDropArea.classList.add('drag-over'); });
+mergeDropArea.addEventListener('dragleave', () => mergeDropArea.classList.remove('drag-over'));
+mergeDropArea.addEventListener('drop', e => {
+  e.preventDefault(); mergeDropArea.classList.remove('drag-over');
+  addMergeFiles(e.dataTransfer.files);
+});
+
+function renderMergeList() {
+  const list = document.getElementById('mergeFileList');
+  const hint = document.getElementById('mergeEmptyHint');
+  list.innerHTML = '';
+  if (!mergeFiles.length) {
+    list.appendChild(hint || (() => {
+      const d = document.createElement('div');
+      d.id = 'mergeEmptyHint';
+      d.style = 'font-family:var(--mono);font-size:11px;color:var(--muted);padding:10px;text-align:center';
+      d.textContent = 'Chưa có file nào — thêm file ở trên';
+      return d;
+    })());
+    document.getElementById('mergeBtn').disabled = true;
+    return;
+  }
+  document.getElementById('mergeBtn').disabled = false;
+  mergeFiles.forEach((f, i) => {
+    const el = document.createElement('div');
+    el.className = 'merge-file-item';
+    el.draggable = true;
+    el.dataset.idx = i;
+    el.innerHTML = `
+      <span class="drag-handle">⠿</span>
+      <span class="f-idx">${i + 1}</span>
+      <span class="f-name">${f.name}</span>
+      <span class="f-lines">${f.lines.length} dòng</span>
+      <span class="f-rm" data-i="${i}">×</span>`;
+    el.querySelector('.f-rm').addEventListener('click', () => { mergeFiles.splice(i, 1); renderMergeList(); });
+
+    // drag-to-reorder
+    el.addEventListener('dragstart', () => { mergeDragIdx = i; el.classList.add('dragging'); });
+    el.addEventListener('dragend',   () => { el.classList.remove('dragging'); mergeDragIdx = null; document.querySelectorAll('.merge-file-item').forEach(x => x.classList.remove('drag-target')); });
+    el.addEventListener('dragover',  e => { e.preventDefault(); el.classList.add('drag-target'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-target'));
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('drag-target');
+      if (mergeDragIdx === null || mergeDragIdx === i) return;
+      const moved = mergeFiles.splice(mergeDragIdx, 1)[0];
+      mergeFiles.splice(i, 0, moved);
+      renderMergeList();
+    });
+    list.appendChild(el);
+  });
+}
+
+function toggleMergeOpt(id) {
+  const el = document.getElementById(id);
+  const on = el.classList.toggle('active');
+  el.querySelector('.merge-opt-check').textContent = on ? '✓' : '';
+}
+
+function isMergeOpt(id) { return document.getElementById(id).classList.contains('active'); }
+
+function runMerge() {
+  if (!mergeFiles.length) return;
+  const dedup      = isMergeOpt('optDedup');
+  const sort       = isMergeOpt('optSort');
+  const trim       = isMergeOpt('optTrim');
+  const skipEmpty  = isMergeOpt('optSkipEmpty');
+  const lower      = isMergeOpt('optLower');
+  const separator  = isMergeOpt('optSeparator');
+
+  let allLines = [];
+  let total = 0;
+
+  mergeFiles.forEach((f, fi) => {
+    if (separator && fi > 0) allLines.push(`# ── ${f.name} ──`);
+    f.lines.forEach(l => {
+      let line = trim ? l.trim() : l;
+      if (lower) line = line.toLowerCase();
+      total++;
+      allLines.push(line);
+    });
+  });
+
+  if (skipEmpty) allLines = allLines.filter(l => l.trim() !== '' || l.startsWith('#'));
+  if (dedup) {
+    const seen = new Set();
+    allLines = allLines.filter(l => {
+      if (l.startsWith('#')) return true;
+      if (seen.has(l)) return false;
+      seen.add(l); return true;
+    });
+  }
+  if (sort) allLines.sort((a, b) => a.localeCompare(b));
+
+  const result = allLines.join('\n');
+  document.getElementById('mergeOutput').value = result;
+
+  document.getElementById('mTotal').textContent = total;
+  document.getElementById('mDedup').textContent = allLines.filter(l => !l.startsWith('#')).length;
+  document.getElementById('mFiles').textContent = mergeFiles.length;
+  document.getElementById('mergeStatsBar').style.display = 'grid';
+  document.getElementById('mergeOutputCard').style.display = 'block';
+}
+
+function copyMerge() {
+  navigator.clipboard.writeText(document.getElementById('mergeOutput').value);
+  const btn = document.querySelector('#mergeOutputCard .btn-copy');
+  btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+}
+function dlMerge() {
+  dlBlob(document.getElementById('mergeOutput').value, 'merged_output.txt');
+}
 
 loadConfig();
 </script>
