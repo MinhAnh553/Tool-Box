@@ -373,12 +373,16 @@
     <div class="output-section" id="outputSection">
       <div class="output-header">
         <div class="section-label">// 02 — kết quả</div>
-        <div>
-          <button class="btn-copy" id="copyBtn">Copy</button>
-          <button class="btn-dl" id="dlBtn">↓ Download</button>
-        </div>
+        <button class="btn-copy" id="copyBtn">Copy</button>
       </div>
       <textarea id="output" readonly></textarea>
+      <div class="dl-row">
+        <div class="dl-name-wrap">
+          <input class="dl-name-input" id="matcherFilename" type="text" placeholder="output_matched" spellcheck="false"/>
+          <span class="dl-name-suffix" id="matcherSuffix">-01_01_2025-0lines.txt</span>
+        </div>
+        <button class="btn-dl" id="dlBtn">↓ Download</button>
+      </div>
     </div>
   </div>
 </div>
@@ -406,7 +410,7 @@
   <div class="card merge-top">
     <div class="section-label" style="color:#a855f7">// 03 — tùy chọn</div>
     <div class="merge-options">
-      <div class="merge-opt active" id="optDedup" onclick="toggleMergeOpt('optDedup')">
+      <div class="merge-opt" id="optDedup" onclick="toggleMergeOpt('optDedup')">
         <span class="merge-opt-icon">🔁</span>
         <span class="merge-opt-label">Loại dòng trùng</span>
         <span class="merge-opt-check">✓</span>
@@ -452,10 +456,16 @@
       <div class="section-label" style="color:#a855f7;margin-bottom:0">// 04 — kết quả</div>
       <div style="display:flex;gap:6px">
         <button class="btn-copy" onclick="copyMerge()">Copy</button>
-        <button class="btn-dl" style="background:#a855f7;border-color:#a855f7" onclick="dlMerge()">↓ Download</button>
       </div>
     </div>
-    <textarea id="mergeOutput" readonly style="width:100%;height:260px;background:#07090b;border:1px solid var(--border);border-radius:4px;color:#c084fc;font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;"></textarea>
+    <textarea id="mergeOutput" readonly
+    <div class="dl-row" style="margin-top:10px">
+      <div class="dl-name-wrap">
+        <input class="dl-name-input" id="mergeFilename" type="text" placeholder="merged_output" spellcheck="false"/>
+        <span class="dl-name-suffix" id="mergeSuffix">-01_01_2025-0lines.txt</span>
+      </div>
+      <button class="btn-dl" style="background:#a855f7;border-color:#a855f7" onclick="dlMerge()">↓ Download</button>
+    </div> style="width:100%;height:260px;background:#07090b;border:1px solid var(--border);border-radius:4px;color:#c084fc;font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;"></textarea>
   </div>
 </div>
 
@@ -632,6 +642,7 @@ processBtn.addEventListener('click', () => {
     document.getElementById('output').value = outputLines.join('\n') || '(Không tìm thấy kết quả khớp)';
     document.getElementById('statsBar').style.display = 'grid';
     document.getElementById('outputSection').style.display = 'block';
+    updateMatcherSuffix(outputLines.length);
   }).catch(e => {
     const eb = document.getElementById('errorBox'); eb.textContent = '⚠ Lỗi: ' + e.message; eb.style.display = 'block';
   }).finally(() => {
@@ -644,9 +655,10 @@ document.getElementById('copyBtn').addEventListener('click', () => {
   document.getElementById('copyBtn').textContent = 'Copied!'; setTimeout(() => document.getElementById('copyBtn').textContent = 'Copy', 1500);
 });
 document.getElementById('dlBtn').addEventListener('click', () => {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([document.getElementById('output').value], { type:'text/plain' }));
-  a.download = 'output_matched.txt'; a.click();
+  const content = document.getElementById('output').value;
+  const lineCount = content.split('\n').filter(l => l.trim()).length;
+  const base = document.getElementById('matcherFilename').value.trim() || 'output_matched';
+  dlBlob(content, buildFilename(base, lineCount));
 });
 
 // ── FILE MERGER ───────────────────────────────────────────────────────────────
@@ -771,11 +783,13 @@ function runMerge() {
   const result = allLines.join('\n');
   document.getElementById('mergeOutput').value = result;
 
+  const mergeLineCount = allLines.filter(l => !l.startsWith('#')).length;
   document.getElementById('mTotal').textContent = total;
-  document.getElementById('mDedup').textContent = allLines.filter(l => !l.startsWith('#')).length;
+  document.getElementById('mDedup').textContent = mergeLineCount;
   document.getElementById('mFiles').textContent = mergeFiles.length;
   document.getElementById('mergeStatsBar').style.display = 'grid';
   document.getElementById('mergeOutputCard').style.display = 'block';
+  updateMergeSuffix(mergeLineCount);
 }
 
 function copyMerge() {
@@ -783,8 +797,42 @@ function copyMerge() {
   const btn = document.querySelector('#mergeOutputCard .btn-copy');
   btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
 }
+
+function buildFilename(base, lineCount) {
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2,'0');
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const y = now.getFullYear();
+  const suffix = `-${d}_${m}_${y}-${lineCount}lines`;
+  return (base || 'output') + suffix + '.txt';
+}
+
+function updateMatcherSuffix(count) {
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2,'0');
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const y = now.getFullYear();
+  document.getElementById('matcherSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+}
+
+function updateMergeSuffix(count) {
+  const now = new Date();
+  const d = String(now.getDate()).padStart(2,'0');
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const y = now.getFullYear();
+  document.getElementById('mergeSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+}
+function dlBlob(content, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));
+  a.download = filename; a.click();
+}
+
 function dlMerge() {
-  dlBlob(document.getElementById('mergeOutput').value, 'merged_output.txt');
+  const content = document.getElementById('mergeOutput').value;
+  const lineCount = content.split('\n').filter(l => l.trim()).length;
+  const base = document.getElementById('mergeFilename').value.trim() || 'merged_output';
+  dlBlob(content, buildFilename(base, lineCount));
 }
 
 loadConfig();
