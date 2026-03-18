@@ -768,7 +768,7 @@ function runMerge() {
       let line = l.replace(/[\r]+$/, '')
       if (trim) line = line.trim();
       if (lower) line = line.toLowerCase();
-      if (skipEmpty && line.trim() === '') return; // bỏ ngay inline
+      if (skipEmpty && line.replace(/[|:;,\s]/g, '') === '') return; // bỏ dòng trống/separator
       total++;
       allLines.push(line);
     });
