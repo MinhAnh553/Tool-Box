@@ -318,6 +318,14 @@
             <input type="text" id="sep2" maxlength="5" placeholder="|"/>
           </div>
           <div>
+            <label>Tên các cột (theo thứ tự, dùng cho output format)</label>
+            <div class="fields-row" id="fieldTags2"></div>
+            <div class="field-add">
+              <input type="text" id="newField2" placeholder="Tên cột mới..." maxlength="30"/>
+              <button class="btn-add-field" id="addFieldBtn2">+</button>
+            </div>
+          </div>
+          <div>
             <label>Vị trí cột Email trong File 2 (bắt đầu từ 0)</label>
             <input type="number" id="emailIdx2" min="0" max="20" placeholder="0"/>
           </div>
@@ -481,7 +489,7 @@ function switchTab(tab) {
 // ── FILE MATCHER ──────────────────────────────────────────────────────────────
 const DEFAULT_CFG = {
   file1Separator: '|', file1Fields: ['username','password','2fa','email','pass_email'],
-  file1EmailIndex: 3,  file2Separator: '|', file2EmailIndex: 0,
+  file1EmailIndex: 3,  file2Separator: '|', file2EmailIndex: 0,  file2Fields: ['email', 'pass_new'],
   outputFormat: '|{username}|{password}|{2fa}|{email}|{pass_email}|'
 };
 let cfg = {};
@@ -498,7 +506,7 @@ function applyConfigToUI() {
   document.getElementById('emailIdx1').value = cfg.file1EmailIndex ?? 3;
   document.getElementById('emailIdx2').value = cfg.file2EmailIndex ?? 0;
   document.getElementById('outputFmt').value = cfg.outputFormat    || '';
-  renderFieldTags(); updateLabels(); updatePreview();
+  renderFieldTags(); renderFieldTags2(); updateLabels(); updatePreview();
 }
 
 function renderFieldTags() {
@@ -515,6 +523,20 @@ function renderFieldTags() {
   });
 }
 
+function renderFieldTags2() {
+  const container = document.getElementById('fieldTags2');
+  container.innerHTML = '';
+  (cfg.file2Fields || []).forEach((f, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'field-tag';
+    tag.innerHTML = `<span>${f}</span><span class="rm" data-i="${i}">×</span>`;
+    container.appendChild(tag);
+  });
+  container.querySelectorAll('.rm').forEach(el => {
+    el.addEventListener('click', () => { cfg.file2Fields.splice(parseInt(el.dataset.i), 1); renderFieldTags2(); updateLabels(); updatePreview(); });
+  });
+}
+
 document.getElementById('addFieldBtn').addEventListener('click', () => {
   const inp = document.getElementById('newField'), val = inp.value.trim();
   if (!val) return;
@@ -524,6 +546,17 @@ document.getElementById('addFieldBtn').addEventListener('click', () => {
 });
 document.getElementById('newField').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('addFieldBtn').click();
+});
+
+document.getElementById('addFieldBtn2').addEventListener('click', () => {
+  const inp = document.getElementById('newField2'), val = inp.value.trim();
+  if (!val) return;
+  if (!cfg.file2Fields) cfg.file2Fields = [];
+  cfg.file2Fields.push(val); inp.value = '';
+  renderFieldTags2(); updateLabels(); updatePreview();
+});
+document.getElementById('newField2').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('addFieldBtn2').click();
 });
 
 ['sep1','sep2','emailIdx1','emailIdx2'].forEach(id => {
@@ -542,14 +575,15 @@ document.getElementById('outputFmt').addEventListener('input', () => {
 function updateLabels() {
   const fields = cfg.file1Fields || [];
   document.getElementById('fmt1Label').textContent = fields.length ? fields.join(cfg.file1Separator || '|') : '(chưa cấu hình)';
-  document.getElementById('fmt2Label').textContent = 'email' + (cfg.file2Separator || '|') + 'pass';
+  const f2 = cfg.file2Fields || []; document.getElementById('fmt2Label').textContent = f2.length ? f2.join(cfg.file2Separator || '|') : '(chưa cấu hình)';
 }
 
 function updatePreview() {
   const fmt = cfg.outputFormat || '', fields = cfg.file1Fields || [];
   if (!fmt) { document.getElementById('fmtPreview').innerHTML = '<span style="color:var(--muted)">Chưa có format</span>'; return; }
   let html = fmt.replace(/&/g,'&amp;').replace(/\x3c/g,'&lt;').replace(/\x3e/g,'&gt;');
-  fields.forEach(f => { html = html.split(`{${f}}`).join(`<span style="color:var(--warn)">{${f}}</span>`); });
+  const allFields = [...(cfg.file1Fields||[]), ...(cfg.file2Fields||[])];
+  allFields.forEach(f => { html = html.split(`{${f}}`).join(`<span style="color:var(--warn)">{${f}}</span>`); });
   html = html.replace(/\{(\d+)\}/g, '<span style="color:var(--warn)">{$1}</span>');
   document.getElementById('fmtPreview').innerHTML = html;
 }
@@ -559,6 +593,7 @@ document.getElementById('saveCfgBtn').addEventListener('click', () => {
   cfg.file2Separator  = document.getElementById('sep2').value || '|';
   cfg.file1EmailIndex = parseInt(document.getElementById('emailIdx1').value) || 0;
   cfg.file2EmailIndex = parseInt(document.getElementById('emailIdx2').value) || 0;
+  // file2Fields managed via tags
   cfg.outputFormat    = document.getElementById('outputFmt').value;
   localStorage.setItem('toolbox_cfg', JSON.stringify(cfg));
   const ok = document.getElementById('saveOk'); ok.classList.add('show'); setTimeout(() => ok.classList.remove('show'), 2500);
@@ -616,22 +651,28 @@ processBtn.addEventListener('click', () => {
       if (email) file1Map[email] = parts;
     }
 
+    const fields2   = cfg.file2Fields || [];
+    const file2Map  = {};
     const file2Emails = new Set();
     for (const line of file2Lines) {
       const parts = line.split(sep2);
       const email = (parts[emailIdx2] || '').trim().toLowerCase();
-      if (email) file2Emails.add(email);
+      if (email) { file2Emails.add(email); file2Map[email] = parts; }
     }
 
     const outputLines = [];
     for (const email of file2Emails) {
       if (file1Map[email]) {
-        const parts = file1Map[email];
+        const parts1 = file1Map[email];
+        const parts2 = file2Map[email] || [];
         let line = outputFmt;
         fields.forEach((fieldName, i) => {
-          line = line.split(`{${fieldName}}`).join((parts[i] || '').trim());
+          line = line.split(`{${fieldName}}`).join((parts1[i] || '').trim());
         });
-        parts.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
+        fields2.forEach((fieldName, i) => {
+          line = line.split(`{${fieldName}}`).join((parts2[i] || '').trim());
+        });
+        parts1.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
         outputLines.push(line);
       }
     }
