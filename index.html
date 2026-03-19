@@ -488,9 +488,9 @@ function switchTab(tab) {
 
 // ── FILE MATCHER ──────────────────────────────────────────────────────────────
 const DEFAULT_CFG = {
-  file1Separator: '|', file1Fields: ['username','password','2fa','email','pass_email'],
-  file1EmailIndex: 3,  file2Separator: '|', file2EmailIndex: 0,  file2Fields: ['email', 'pass_new'],
-  outputFormat: '|{username}|{password}|{2fa}|{email}|{pass_email}|'
+  file1Separator: '|', file1Fields: ['username','password','2fa','email','email ig','pass email'],
+  file1EmailIndex: 4,  file2Separator: '|', file2EmailIndex: 0,  file2Fields: ['email2','pass new'],
+  outputFormat: '{username}|{password}|{2fa}|{email2}|{email}|{pass new}|'
 };
 let cfg = {};
 
