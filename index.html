@@ -371,12 +371,16 @@
       </div>
     </div>
     <div class="arrow-center">↓ &nbsp;so khớp email&nbsp; ↓</div>
+    <div class="mode-toggle">
+      <button class="mode-btn active-match" id="modeMatch" onclick="setMode('match')">✓ &nbsp;Lấy dòng TRÙNG</button>
+      <button class="mode-btn" id="modeUnmatch" onclick="setMode('unmatch')">✗ &nbsp;Lấy dòng KHÔNG TRÙNG</button>
+    </div>
     <button class="btn" id="processBtn" disabled>⚡ &nbsp;Xử Lý</button>
     <div class="error-box" id="errorBox"></div>
     <div class="stats-bar" id="statsBar">
       <div class="stat-box"><div class="stat-num" id="s1">0</div><div class="stat-label">File 1 records</div></div>
       <div class="stat-box"><div class="stat-num" id="s2">0</div><div class="stat-label">File 2 emails</div></div>
-      <div class="stat-box"><div class="stat-num green" id="sm">0</div><div class="stat-label">Matched ✓</div></div>
+      <div class="stat-box"><div class="stat-num green" id="sm">0</div><div class="stat-label" id="smLabel">Matched ✓</div></div>
     </div>
     <div class="output-section" id="outputSection">
       <div class="output-header">
@@ -619,6 +623,18 @@ file2Input.addEventListener('change', () => { document.getElementById('fname2').
   el.addEventListener('drop', () => el.classList.remove('drag-over'));
 });
 
+let matchMode = 'match'; // 'match' | 'unmatch'
+
+function setMode(mode) {
+  matchMode = mode;
+  document.getElementById('modeMatch').className   = 'mode-btn' + (mode === 'match'   ? ' active-match'   : '');
+  document.getElementById('modeUnmatch').className = 'mode-btn' + (mode === 'unmatch' ? ' active-unmatch' : '');
+  document.getElementById('smLabel').textContent   = mode === 'match' ? 'Matched ✓' : 'Unmatched ✗';
+  document.getElementById('smLabel').style.color   = mode === 'match' ? '' : 'var(--danger)';
+  document.getElementById('sm').style.color        = mode === 'match' ? 'var(--accent)' : 'var(--danger)';
+  document.getElementById('matcherFilename').placeholder = mode === 'match' ? 'output_matched' : 'output_unmatched';
+}
+
 processBtn.addEventListener('click', () => {
   document.getElementById('errorBox').style.display = 'none';
   document.getElementById('outputSection').style.display = 'none';
@@ -661,19 +677,27 @@ processBtn.addEventListener('click', () => {
     }
 
     const outputLines = [];
-    for (const email of file2Emails) {
-      if (file1Map[email]) {
-        const parts1 = file1Map[email];
-        const parts2 = file2Map[email] || [];
-        let line = outputFmt;
-        fields.forEach((fieldName, i) => {
-          line = line.split(`{${fieldName}}`).join((parts1[i] || '').trim());
-        });
-        fields2.forEach((fieldName, i) => {
-          line = line.split(`{${fieldName}}`).join((parts2[i] || '').trim());
-        });
-        parts1.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
-        outputLines.push(line);
+    if (matchMode === 'match') {
+      for (const email of file2Emails) {
+        if (file1Map[email]) {
+          const parts1 = file1Map[email];
+          const parts2 = file2Map[email] || [];
+          let line = outputFmt;
+          fields.forEach((fieldName, i) => { line = line.split(`{${fieldName}}`).join((parts1[i] || '').trim()); });
+          fields2.forEach((fieldName, i) => { line = line.split(`{${fieldName}}`).join((parts2[i] || '').trim()); });
+          parts1.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
+          outputLines.push(line);
+        }
+      }
+    } else {
+      // Lấy dòng File 1 mà email KHÔNG có trong File 2
+      for (const [email, parts1] of Object.entries(file1Map)) {
+        if (!file2Emails.has(email)) {
+          let line = outputFmt;
+          fields.forEach((fieldName, i) => { line = line.split(`{${fieldName}}`).join((parts1[i] || '').trim()); });
+          parts1.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
+          outputLines.push(line);
+        }
       }
     }
 
