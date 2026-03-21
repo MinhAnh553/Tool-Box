@@ -255,9 +255,21 @@
     }
     .btn:hover:not(:disabled){background:#00ffb3;transform:translateY(-1px);box-shadow:0 0 24px rgba(0,229,160,0.35)}
     .btn:disabled{opacity:0.4;cursor:not-allowed}
-    .btn
-.btn
-.spinner{
+
+    /* ── MODE TOGGLE ── */
+    .mode-toggle{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+    .mode-btn{
+      padding:11px 14px;background:var(--surface2);border:1px solid var(--border);
+      border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:10px;
+      letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+      transition:all 0.15s;text-align:center;
+    }
+    .mode-btn:hover{color:var(--text);border-color:var(--muted)}
+    .mode-btn.active-match{background:rgba(0,229,160,0.08);color:var(--accent);border-color:var(--accent)}
+    .mode-btn.active-unmatch{background:rgba(255,69,96,0.08);color:var(--danger);border-color:var(--danger)}
+    .mode-btn.active-unmatch2{background:rgba(255,176,32,0.08);color:var(--warn);border-color:var(--warn)}
+
+    .spinner{
       display:inline-block;width:12px;height:12px;border:2px solid rgba(0,0,0,0.3);
       border-top-color:#000;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:7px;
     }
@@ -372,8 +384,9 @@
     </div>
     <div class="arrow-center">↓ &nbsp;so khớp email&nbsp; ↓</div>
     <div class="mode-toggle">
-      <button class="mode-btn active-match" id="modeMatch" onclick="setMode('match')">✓ &nbsp;Lấy dòng TRÙNG</button>
-      <button class="mode-btn" id="modeUnmatch" onclick="setMode('unmatch')">✗ &nbsp;Lấy dòng KHÔNG TRÙNG</button>
+      <button class="mode-btn active-match" id="modeMatch" onclick="setMode('match')">✓ &nbsp;Trùng</button>
+      <button class="mode-btn" id="modeUnmatch1" onclick="setMode('unmatch1')">✗ &nbsp;Chỉ có trong File 1</button>
+      <button class="mode-btn" id="modeUnmatch2" onclick="setMode('unmatch2')">✗ &nbsp;Chỉ có trong File 2</button>
     </div>
     <button class="btn" id="processBtn" disabled>⚡ &nbsp;Xử Lý</button>
     <div class="error-box" id="errorBox"></div>
@@ -623,15 +636,18 @@ file2Input.addEventListener('change', () => { document.getElementById('fname2').
   el.addEventListener('drop', () => el.classList.remove('drag-over'));
 });
 
-let matchMode = 'match'; // 'match' | 'unmatch'
+let matchMode = 'match'; // 'match' | 'unmatch1' | 'unmatch2'
 
 function setMode(mode) {
   matchMode = mode;
-  document.getElementById('modeMatch').className   = 'mode-btn' + (mode === 'match'   ? ' active-match'   : '');
-  document.getElementById('modeUnmatch').className = 'mode-btn' + (mode === 'unmatch' ? ' active-unmatch' : '');
-  document.getElementById('smLabel').textContent   = mode === 'match' ? 'Matched ✓' : 'Unmatched ✗';
-  document.getElementById('smLabel').style.color   = mode === 'match' ? '' : 'var(--danger)';
-  document.getElementById('sm').style.color        = mode === 'match' ? 'var(--accent)' : 'var(--danger)';
+  document.getElementById('modeMatch').className    = 'mode-btn' + (mode === 'match'    ? ' active-match'    : '');
+  document.getElementById('modeUnmatch1').className = 'mode-btn' + (mode === 'unmatch1' ? ' active-unmatch'  : '');
+  document.getElementById('modeUnmatch2').className = 'mode-btn' + (mode === 'unmatch2' ? ' active-unmatch2' : '');
+  const labels = { match: ['Matched ✓','','var(--accent)'], unmatch1: ['F1 không có F2','var(--danger)','var(--danger)'], unmatch2: ['F2 không có F1','var(--warn)','var(--warn)'] };
+  const [lbl, clr, smClr] = labels[mode];
+  document.getElementById('smLabel').textContent = lbl;
+  document.getElementById('smLabel').style.color = clr;
+  document.getElementById('sm').style.color      = smClr;
   document.getElementById('matcherFilename').placeholder = mode === 'match' ? 'output_matched' : 'output_unmatched';
 }
 
@@ -678,6 +694,7 @@ processBtn.addEventListener('click', () => {
 
     const outputLines = [];
     if (matchMode === 'match') {
+      // File 1 TRÙNG với File 2
       for (const email of file2Emails) {
         if (file1Map[email]) {
           const parts1 = file1Map[email];
@@ -689,13 +706,22 @@ processBtn.addEventListener('click', () => {
           outputLines.push(line);
         }
       }
-    } else {
-      // Lấy dòng File 1 mà email KHÔNG có trong File 2
+    } else if (matchMode === 'unmatch1') {
+      // File 1 có nhưng File 2 KHÔNG có
       for (const [email, parts1] of Object.entries(file1Map)) {
         if (!file2Emails.has(email)) {
           let line = outputFmt;
           fields.forEach((fieldName, i) => { line = line.split(`{${fieldName}}`).join((parts1[i] || '').trim()); });
           parts1.forEach((val, i) => { line = line.split(`{${i}}`).join(val.trim()); });
+          outputLines.push(line);
+        }
+      }
+    } else {
+      // File 2 có nhưng File 1 KHÔNG có — output raw dòng file 2
+      for (const email of file2Emails) {
+        if (!file1Map[email]) {
+          const parts2 = file2Map[email] || [];
+          let line = parts2.join(sep2);
           outputLines.push(line);
         }
       }
