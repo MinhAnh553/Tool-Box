@@ -182,9 +182,113 @@
       background:rgba(255,69,96,0.08);border:1px solid rgba(255,69,96,0.3);border-radius:4px;
       padding:12px 16px;font-family:var(--mono);font-size:12px;color:var(--danger);margin-top:16px;display:none;
     }
+    .dl-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .dl-name-wrap{display:flex;align-items:center;flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+    .dl-name-input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:12px;padding:8px 10px}
+    .dl-name-suffix{font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 10px;white-space:nowrap}
 
     .tab-btn.tab-merge.active::after{background:linear-gradient(90deg,#a855f7,#ec4899)}
     .tab-btn.tab-merge.active{color:#a855f7}
+
+    .tab-btn.tab-email.active::after{background:linear-gradient(90deg,#00e5a0,#0af)}
+    .tab-btn.tab-email.active{color:#00e5a0}
+
+    /* ── EMAIL TOOLS PANEL ── */
+    .email-mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+    .email-mode-btn{
+      padding:12px 16px;background:var(--surface2);border:1px solid var(--border);
+      border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:10px;
+      letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+      transition:all 0.15s;text-align:center;
+    }
+    .email-mode-btn:hover{color:var(--text);border-color:var(--muted)}
+    .email-mode-btn.active-compare{background:rgba(0,229,160,0.08);color:var(--accent);border-color:var(--accent)}
+    .email-mode-btn.active-dedup{background:rgba(0,170,255,0.08);color:var(--accent2);border-color:var(--accent2)}
+
+    .email-section{display:none}
+    .email-section.active{display:block}
+
+    .email-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    @media(max-width:620px){.email-grid{grid-template-columns:1fr}}
+
+    .email-box{
+      background:var(--bg);border:1px solid var(--border);border-radius:4px;overflow:hidden;transition:border-color 0.2s;
+    }
+    .email-box:focus-within{border-color:var(--accent)}
+    .email-box-hdr{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);
+    }
+    .email-box-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;text-transform:uppercase}
+    .email-box-label.l1{color:var(--accent)}
+    .email-box-label.l2{color:var(--accent2)}
+    .email-box-label.dedup-in{color:var(--warn)}
+    .email-box-label.dedup-out{color:var(--accent)}
+    .email-cnt{
+      font-family:var(--mono);font-size:10px;color:var(--muted);
+      background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:2px 8px;
+    }
+    .email-box textarea{
+      width:100%;height:220px;background:transparent;border:none;outline:none;
+      resize:vertical;color:var(--text);font-family:var(--mono);font-size:12px;line-height:1.7;padding:12px 14px;
+    }
+    .email-box textarea::placeholder{color:var(--muted)}
+
+    .email-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+    .email-stat{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:12px;text-align:center}
+    .email-stat-num{font-family:var(--mono);font-size:24px;font-weight:700;line-height:1;margin-bottom:4px}
+    .email-stat-num.c1{color:var(--accent)}
+    .email-stat-num.c2{color:var(--danger)}
+    .email-stat-num.c3{color:var(--accent2)}
+    .email-stat-num.c4{color:var(--warn)}
+    .email-stat-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+
+    .email-result-tabs{
+      display:flex;gap:4px;margin-bottom:12px;background:var(--surface2);
+      border:1px solid var(--border);border-radius:4px;padding:4px;
+    }
+    .ertab{
+      flex:1;background:transparent;color:var(--muted);border:none;border-radius:3px;
+      padding:8px 12px;font-size:10px;cursor:pointer;font-family:var(--mono);
+      letter-spacing:2px;text-transform:uppercase;transition:all 0.15s;
+    }
+    .ertab.active{color:#000}
+    .ertab.ert-unique.active{background:var(--accent)}
+    .ertab.ert-dup.active{background:var(--danger)}
+    .ertab.ert-l2only.active{background:var(--accent2)}
+    .ertab.ert-clean.active{background:var(--accent)}
+    .ertab.ert-removed.active{background:var(--danger)}
+
+    .erpanel{display:none}
+    .erpanel.active{display:block}
+
+    .erbox{background:var(--bg);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+    .erbox-hdr{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);
+    }
+    .erbox-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+    .er-copy-btn{
+      background:transparent;border:1px solid var(--border);border-radius:3px;
+      color:var(--muted);padding:4px 12px;font-family:var(--mono);font-size:10px;
+      cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s;
+    }
+    .er-copy-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .er-copy-btn.copied{background:var(--accent);border-color:var(--accent);color:#000}
+
+    .er-email-list{max-height:320px;overflow-y:auto;padding:8px 0}
+    .er-email-item{
+      padding:5px 14px;font-family:var(--mono);font-size:12px;
+      display:flex;align-items:center;gap:8px;transition:background 0.1s;
+    }
+    .er-email-item:hover{background:rgba(255,255,255,0.03)}
+    .er-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+    .er-empty{padding:32px;text-align:center;color:var(--muted);font-family:var(--mono);font-size:11px}
+    .er-email-list::-webkit-scrollbar{width:3px}
+    .er-email-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+    .email-results-area{display:none}
+    .email-results-area.show{display:block}
 
     /* ── MERGE PANEL ── */
     .merge-drop-area{
@@ -291,6 +395,9 @@
   </button>
   <button class="tab-btn tab-merge" onclick="switchTab('merge')">
     <div class="tab-dot"></div> Gộp File
+  </button>
+  <button class="tab-btn tab-email" onclick="switchTab('email')">
+    <div class="tab-dot"></div> Email Tools
   </button>
 </div>
 
@@ -493,6 +600,136 @@
     </div>
   </div>
 </div>
+
+<!-- ══════════════ EMAIL TOOLS PANEL ══════════════ -->
+<div class="panel" id="panel-email">
+
+  <div class="card">
+    <div class="section-label">// chọn chế độ</div>
+    <div class="email-mode-toggle">
+      <button class="email-mode-btn active-compare" id="emailModeCompare" onclick="setEmailMode('compare')">⚡ &nbsp;So sánh 2 List</button>
+      <button class="email-mode-btn" id="emailModeDedup" onclick="setEmailMode('dedup')">✦ &nbsp;Lọc trùng 1 List</button>
+    </div>
+  </div>
+
+  <!-- ── COMPARE MODE ── -->
+  <div class="email-section active" id="esec-compare">
+    <div class="card">
+      <div class="section-label">// 01 — nhập 2 danh sách email</div>
+      <div class="email-grid">
+        <div class="email-box">
+          <div class="email-box-hdr">
+            <span class="email-box-label l1">List 1</span>
+            <span class="email-cnt" id="ecnt1">0 emails</span>
+          </div>
+          <textarea id="elist1" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng..."></textarea>
+        </div>
+        <div class="email-box">
+          <div class="email-box-hdr">
+            <span class="email-box-label l2">List 2</span>
+            <span class="email-cnt" id="ecnt2">0 emails</span>
+          </div>
+          <textarea id="elist2" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng..."></textarea>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" style="flex:1" onclick="runCompare()">⚡ &nbsp;So sánh ngay</button>
+        <button class="btn" style="flex:0 0 auto;background:var(--surface2);color:var(--muted);border:1px solid var(--border)" onclick="clearCompareEmail()">✕ Xóa</button>
+      </div>
+    </div>
+
+    <div class="email-results-area" id="ecompare-results">
+      <div class="card">
+        <div class="email-stats-row">
+          <div class="email-stat"><div class="email-stat-num c1" id="estat-unique">0</div><div class="email-stat-label">Chỉ trong List 1</div></div>
+          <div class="email-stat"><div class="email-stat-num c2" id="estat-dup">0</div><div class="email-stat-label">Trùng cả 2</div></div>
+          <div class="email-stat"><div class="email-stat-num c3" id="estat-l2only">0</div><div class="email-stat-label">Chỉ trong List 2</div></div>
+        </div>
+
+        <div class="email-result-tabs">
+          <button class="ertab ert-unique active" onclick="switchErTab('unique')">List 1 không trùng</button>
+          <button class="ertab ert-dup" onclick="switchErTab('dup')">Trùng nhau</button>
+          <button class="ertab ert-l2only" onclick="switchErTab('l2only')">Chỉ trong List 2</button>
+        </div>
+
+        <div class="erpanel active" id="erpanel-unique">
+          <div class="erbox">
+            <div class="erbox-hdr">
+              <span class="erbox-title">Email trong List 1 không có trong List 2</span>
+              <button class="er-copy-btn" onclick="erCopy('unique', this)">Copy</button>
+            </div>
+            <div class="er-email-list" id="erlist-unique"></div>
+          </div>
+        </div>
+        <div class="erpanel" id="erpanel-dup">
+          <div class="erbox">
+            <div class="erbox-hdr">
+              <span class="erbox-title">Email xuất hiện ở cả hai List</span>
+              <button class="er-copy-btn" onclick="erCopy('dup', this)">Copy</button>
+            </div>
+            <div class="er-email-list" id="erlist-dup"></div>
+          </div>
+        </div>
+        <div class="erpanel" id="erpanel-l2only">
+          <div class="erbox">
+            <div class="erbox-hdr">
+              <span class="erbox-title">Email trong List 2 không có trong List 1</span>
+              <button class="er-copy-btn" onclick="erCopy('l2only', this)">Copy</button>
+            </div>
+            <div class="er-email-list" id="erlist-l2only"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEDUP MODE ── -->
+  <div class="email-section" id="esec-dedup">
+    <div class="card">
+      <div class="section-label" style="color:var(--accent2)">// 01 — nhập danh sách cần lọc</div>
+      <div class="email-grid">
+        <div class="email-box">
+          <div class="email-box-hdr">
+            <span class="email-box-label dedup-in">Danh sách nhập</span>
+            <span class="email-cnt" id="ddup-cnt-in">0 emails</span>
+          </div>
+          <textarea id="ddup-input" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng&#10;&#10;Tool sẽ xóa các dòng trùng nhau."></textarea>
+        </div>
+        <div class="email-box">
+          <div class="email-box-hdr">
+            <span class="email-box-label dedup-out">Kết quả sau lọc</span>
+            <button class="er-copy-btn" id="ddup-copy-clean-btn" onclick="ddupCopyClean(this)">Copy</button>
+          </div>
+          <div class="er-email-list" id="ddup-output-list" style="min-height:180px">
+            <div class="er-empty">Nhấn "Lọc trùng" để xem kết quả</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" style="flex:1;background:var(--accent2)" onclick="runDedup()">✦ &nbsp;Lọc trùng ngay</button>
+        <button class="btn" style="flex:0 0 auto;background:var(--surface2);color:var(--muted);border:1px solid var(--border)" onclick="clearDedup()">✕ Xóa</button>
+      </div>
+    </div>
+
+    <div class="email-results-area" id="ddup-results">
+      <div class="card">
+        <div class="email-stats-row">
+          <div class="email-stat"><div class="email-stat-num c4" id="ddup-stat-total">0</div><div class="email-stat-label">Tổng dòng nhập</div></div>
+          <div class="email-stat"><div class="email-stat-num c2" id="ddup-stat-removed">0</div><div class="email-stat-label">Dòng trùng xóa</div></div>
+          <div class="email-stat"><div class="email-stat-num c1" id="ddup-stat-clean">0</div><div class="email-stat-label">Email sạch</div></div>
+        </div>
+        <div class="erbox">
+          <div class="erbox-hdr">
+            <span class="erbox-title" style="color:var(--danger)">Các email trùng đã bị loại</span>
+            <button class="er-copy-btn" onclick="ddupCopyRemoved(this)">Copy</button>
+          </div>
+          <div class="er-email-list" id="ddup-removed-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-email -->
 
 <script>
 // ── TAB SWITCH ────────────────────────────────────────────────────────────────
@@ -927,6 +1164,125 @@ function dlMerge() {
   const lineCount = content.split('\n').filter(l => l.trim()).length;
   const base = document.getElementById('mergeFilename').value.trim() || 'merged_output';
   dlBlob(content, buildFilename(base, lineCount));
+}
+
+// ── EMAIL TOOLS ───────────────────────────────────────────────────────────────
+let erData = { unique: [], dup: [], l2only: [] };
+let ddupClean = [], ddupRemoved = [];
+
+function setEmailMode(mode) {
+  document.getElementById('emailModeCompare').className = 'email-mode-btn' + (mode==='compare' ? ' active-compare' : '');
+  document.getElementById('emailModeDedup').className   = 'email-mode-btn' + (mode==='dedup'   ? ' active-dedup'   : '');
+  document.querySelectorAll('.email-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('esec-' + mode).classList.add('active');
+}
+
+function parseEmailLines(text) {
+  return text.split('\n').map(e => e.trim().toLowerCase()).filter(e => e.length > 0 && e.includes('@'));
+}
+
+document.getElementById('elist1').addEventListener('input', function() {
+  const n = parseEmailLines(this.value).length;
+  document.getElementById('ecnt1').textContent = n + ' email' + (n!==1?'s':'');
+});
+document.getElementById('elist2').addEventListener('input', function() {
+  const n = parseEmailLines(this.value).length;
+  document.getElementById('ecnt2').textContent = n + ' email' + (n!==1?'s':'');
+});
+document.getElementById('ddup-input').addEventListener('input', function() {
+  const n = parseEmailLines(this.value).length;
+  document.getElementById('ddup-cnt-in').textContent = n + ' email' + (n!==1?'s':'');
+});
+
+function runCompare() {
+  const l1 = parseEmailLines(document.getElementById('elist1').value);
+  const l2 = parseEmailLines(document.getElementById('elist2').value);
+  const s1 = new Set(l1), s2 = new Set(l2);
+  erData.unique = [...new Set(l1.filter(e => !s2.has(e)))];
+  erData.dup    = [...new Set(l1.filter(e => s2.has(e)))];
+  erData.l2only = [...new Set(l2.filter(e => !s1.has(e)))];
+  document.getElementById('estat-unique').textContent = erData.unique.length;
+  document.getElementById('estat-dup').textContent    = erData.dup.length;
+  document.getElementById('estat-l2only').textContent = erData.l2only.length;
+  renderErList('erlist-unique', erData.unique, 'var(--accent)');
+  renderErList('erlist-dup',    erData.dup,    'var(--danger)');
+  renderErList('erlist-l2only', erData.l2only, 'var(--accent2)');
+  document.getElementById('ecompare-results').classList.add('show');
+  switchErTab('unique');
+}
+
+function renderErList(id, emails, dotColor) {
+  const el = document.getElementById(id);
+  if (!emails.length) { el.innerHTML = '<div class="er-empty">Không có email nào</div>'; return; }
+  el.innerHTML = emails.map(e =>
+    `<div class="er-email-item"><span class="er-dot" style="background:${dotColor}"></span>${e}</div>`
+  ).join('');
+}
+
+function switchErTab(tab) {
+  document.querySelectorAll('.ertab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.erpanel').forEach(p => p.classList.remove('active'));
+  document.querySelector('.ert-' + tab).classList.add('active');
+  document.getElementById('erpanel-' + tab).classList.add('active');
+}
+
+function erCopy(type, btn) {
+  navigator.clipboard.writeText(erData[type].join('\n')).then(() => {
+    btn.textContent = '✓ Copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function clearCompareEmail() {
+  document.getElementById('elist1').value = '';
+  document.getElementById('elist2').value = '';
+  document.getElementById('ecnt1').textContent = '0 emails';
+  document.getElementById('ecnt2').textContent = '0 emails';
+  document.getElementById('ecompare-results').classList.remove('show');
+  erData = { unique: [], dup: [], l2only: [] };
+}
+
+function runDedup() {
+  const raw = parseEmailLines(document.getElementById('ddup-input').value);
+  const seen = new Set(), dupes = new Set();
+  raw.forEach(e => { if (seen.has(e)) dupes.add(e); else seen.add(e); });
+  ddupClean   = [...seen];
+  ddupRemoved = [...dupes];
+  const removed = raw.length - ddupClean.length;
+  document.getElementById('ddup-stat-total').textContent   = raw.length;
+  document.getElementById('ddup-stat-removed').textContent = removed;
+  document.getElementById('ddup-stat-clean').textContent   = ddupClean.length;
+  const outEl = document.getElementById('ddup-output-list');
+  outEl.innerHTML = ddupClean.length
+    ? ddupClean.map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--accent)"></span>${e}</div>`).join('')
+    : '<div class="er-empty">Không có email nào</div>';
+  const remEl = document.getElementById('ddup-removed-list');
+  remEl.innerHTML = ddupRemoved.length
+    ? ddupRemoved.map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--danger)"></span>${e}</div>`).join('')
+    : '<div class="er-empty">Không có email nào bị xóa 🎉</div>';
+  document.getElementById('ddup-results').classList.add('show');
+}
+
+function ddupCopyClean(btn) {
+  navigator.clipboard.writeText(ddupClean.join('\n')).then(() => {
+    btn.textContent = '✓ Copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function ddupCopyRemoved(btn) {
+  navigator.clipboard.writeText(ddupRemoved.join('\n')).then(() => {
+    btn.textContent = '✓ Copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function clearDedup() {
+  document.getElementById('ddup-input').value = '';
+  document.getElementById('ddup-cnt-in').textContent = '0 emails';
+  document.getElementById('ddup-output-list').innerHTML = '<div class="er-empty">Nhấn "Lọc trùng" để xem kết quả</div>';
+  document.getElementById('ddup-results').classList.remove('show');
+  ddupClean = []; ddupRemoved = [];
 }
 
 loadConfig();
