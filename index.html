@@ -193,6 +193,9 @@
     .tab-btn.tab-email.active::after{background:linear-gradient(90deg,#00e5a0,#0af)}
     .tab-btn.tab-email.active{color:#00e5a0}
 
+    .tab-btn.tab-recovery.active::after{background:linear-gradient(90deg,#f97316,#ef4444)}
+    .tab-btn.tab-recovery.active{color:#f97316}
+
     /* ── EMAIL TOOLS PANEL ── */
     .email-mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
     .email-mode-btn{
@@ -290,7 +293,66 @@
     .email-results-area{display:none}
     .email-results-area.show{display:block}
 
-    /* ── MERGE PANEL ── */
+    /* ── RECOVERY MATCHER PANEL ── */
+    .card.recovery-top::before{background:linear-gradient(90deg,#f97316,#ef4444)}
+    .recovery-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+    @media(max-width:620px){.recovery-grid{grid-template-columns:1fr}}
+    .recovery-drop-zone{
+      border:1px dashed var(--border);border-radius:4px;padding:28px 16px;text-align:center;
+      cursor:pointer;transition:all 0.2s;position:relative;background:var(--bg);
+    }
+    .recovery-drop-zone:hover,.recovery-drop-zone.drag-over{border-color:#f97316;background:rgba(249,115,22,0.04)}
+    .recovery-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .recovery-drop-icon{font-size:26px;margin-bottom:8px}
+    .recovery-drop-title{font-weight:700;font-size:14px;color:#fff;margin-bottom:5px}
+    .recovery-drop-format{
+      font-family:var(--mono);font-size:10px;color:#f97316;
+      background:rgba(249,115,22,0.1);padding:3px 7px;border-radius:3px;
+      display:inline-block;margin-bottom:6px;word-break:break-all;max-width:100%;
+    }
+    .recovery-drop-hint{font-size:11px;color:var(--muted)}
+    .recovery-file-name{margin-top:8px;font-family:var(--mono);font-size:11px;color:#f97316;word-break:break-all}
+    .recovery-stats-bar{display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+    .recovery-stat-box{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:14px;text-align:center}
+    .recovery-stat-num{font-family:var(--mono);font-size:26px;font-weight:700;color:#f97316}
+    .recovery-stat-num.green{color:var(--accent)}
+    .recovery-stat-num.red{color:var(--danger)}
+    .recovery-stat-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+    .recovery-output-section{margin-top:24px;display:none}
+    textarea#recoveryOutput{
+      width:100%;height:260px;background:#07090b;border:1px solid var(--border);border-radius:4px;
+      color:#fb923c;font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;
+    }
+    .recovery-sep-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
+    .recovery-sep-group{display:flex;flex-direction:column;gap:4px}
+    .recovery-sep-group label{font-size:12px;color:var(--muted)}
+    .recovery-sep-group input{
+      width:80px;background:var(--surface2);border:1px solid var(--border);
+      border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;
+      padding:7px 10px;outline:none;transition:border-color 0.15s;
+    }
+    .recovery-sep-group input:focus{border-color:#f97316}
+    .recovery-idx-group{display:flex;flex-direction:column;gap:4px}
+    .recovery-idx-group label{font-size:12px;color:var(--muted)}
+    .recovery-idx-group input{
+      width:70px;background:var(--surface2);border:1px solid var(--border);
+      border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;
+      padding:7px 10px;outline:none;transition:border-color 0.15s;
+    }
+    .recovery-idx-group input:focus{border-color:#f97316}
+    .btn.recovery-btn{background:#f97316}
+    .btn.recovery-btn:hover:not(:disabled){background:#fb923c;box-shadow:0 0 24px rgba(249,115,22,0.35)}
+    .recovery-info-box{
+      background:rgba(249,115,22,0.06);border:1px solid rgba(249,115,22,0.2);
+      border-radius:4px;padding:14px 16px;font-family:var(--mono);font-size:11px;
+      color:var(--muted);margin-bottom:16px;line-height:1.8;
+    }
+    .recovery-info-box span{color:#f97316}
+    .recovery-no-match-section{margin-top:14px;display:none}
+    textarea#recoveryNoMatch{
+      width:100%;height:160px;background:#07090b;border:1px solid rgba(255,69,96,0.3);border-radius:4px;
+      color:var(--danger);font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;
+    }
     .merge-drop-area{
       border:2px dashed var(--border);border-radius:6px;padding:28px 20px;
       text-align:center;cursor:pointer;transition:all 0.2s;background:var(--bg);
@@ -398,6 +460,9 @@
   </button>
   <button class="tab-btn tab-email" onclick="switchTab('email')">
     <div class="tab-dot"></div> Email Tools
+  </button>
+  <button class="tab-btn tab-recovery" onclick="switchTab('recovery')">
+    <div class="tab-dot"></div> Recovery Matcher
   </button>
 </div>
 
@@ -731,13 +796,128 @@
 
 </div><!-- /panel-email -->
 
-<script>
+<!-- ══════════════ RECOVERY MATCHER PANEL ══════════════ -->
+<div class="panel" id="panel-recovery">
+
+  <div class="card recovery-top">
+    <div class="section-label" style="color:#f97316">// ⚙ cấu hình format</div>
+
+    <div class="recovery-info-box">
+      <span>File 1</span> — định dạng: <span>email|pass</span> &nbsp;(hoặc bất kỳ format nào, cần chỉ vị trí cột email)<br>
+      <span>File 2</span> — định dạng: <span>email|pass|refresh_token|client_id|mail_khôi_phục</span> &nbsp;(cần chỉ vị trí cột email &amp; cột mail khôi phục)<br>
+      <span>Output</span> — kết quả: <span>email|pass|mail_khôi_phục</span>
+    </div>
+
+    <div class="recovery-sep-row">
+      <div class="recovery-sep-group">
+        <label>Separator File 1</label>
+        <input type="text" id="recSep1" value="|" maxlength="5" placeholder="|"/>
+      </div>
+      <div class="recovery-idx-group">
+        <label>Cột email F1 (từ 0)</label>
+        <input type="number" id="recEmailIdx1" value="0" min="0" max="30"/>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Các cột lấy từ File 1 (output)</label>
+        <input type="text" id="recF1Cols" value="0,1" placeholder="0,1" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;" title="Nhập chỉ số các cột cần lấy từ File 1, cách nhau bởi dấu phẩy. Ví dụ: 0,1"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:3px">Chỉ số cột (0,1,...) cách bởi dấu phẩy</div>
+      </div>
+    </div>
+    <div class="recovery-sep-row">
+      <div class="recovery-sep-group">
+        <label>Separator File 2</label>
+        <input type="text" id="recSep2" value="|" maxlength="5" placeholder="|"/>
+      </div>
+      <div class="recovery-idx-group">
+        <label>Cột email F2 (từ 0)</label>
+        <input type="number" id="recEmailIdx2" value="0" min="0" max="30"/>
+      </div>
+      <div class="recovery-idx-group">
+        <label>Cột mail KP F2 (từ 0)</label>
+        <input type="number" id="recRecoveryIdx" value="4" min="0" max="30"/>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Output separator</label>
+        <input type="text" id="recOutSep" value="|" maxlength="5" placeholder="|" style="width:60px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="card recovery-top">
+    <div class="section-label" style="color:#f97316">// 01 — upload files</div>
+    <div class="recovery-grid">
+      <div>
+        <div class="recovery-drop-zone" id="recZone1">
+          <input type="file" id="recFile1" accept=".txt,.csv"/>
+          <div class="recovery-drop-icon">📋</div>
+          <div class="recovery-drop-title">File 1 — Danh sách cần tra</div>
+          <div class="recovery-drop-format">email|pass</div>
+          <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
+          <div class="recovery-file-name" id="recFname1"></div>
+        </div>
+      </div>
+      <div>
+        <div class="recovery-drop-zone" id="recZone2">
+          <input type="file" id="recFile2" accept=".txt,.csv"/>
+          <div class="recovery-drop-icon">🔑</div>
+          <div class="recovery-drop-title">File 2 — Database có mail KP</div>
+          <div class="recovery-drop-format">email|pass|...|mail_khôi_phục</div>
+          <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
+          <div class="recovery-file-name" id="recFname2"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn recovery-btn" id="recProcessBtn" disabled>🔍 &nbsp;Khớp Mail Khôi Phục</button>
+    <div class="error-box" id="recErrorBox"></div>
+
+    <div class="recovery-stats-bar" id="recStatsBar">
+      <div class="recovery-stat-box"><div class="recovery-stat-num" id="recS1">0</div><div class="recovery-stat-label">File 1 records</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num" id="recS2">0</div><div class="recovery-stat-label">File 2 records</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num green" id="recSm">0</div><div class="recovery-stat-label">Khớp ✓</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num red" id="recSnm">0</div><div class="recovery-stat-label">Không khớp ✗</div></div>
+    </div>
+
+    <div class="recovery-output-section" id="recOutputSection">
+      <div class="output-header" style="margin-bottom:10px">
+        <div class="section-label" style="color:#f97316;margin-bottom:0">// 02 — kết quả khớp</div>
+        <button class="btn-copy" id="recCopyBtn">Copy</button>
+      </div>
+      <textarea id="recoveryOutput" readonly placeholder="email|pass|mail_khôi_phục"></textarea>
+      <div class="dl-row">
+        <div class="dl-name-wrap">
+          <input class="dl-name-input" id="recFilename" type="text" placeholder="recovery_matched" spellcheck="false"/>
+          <span class="dl-name-suffix" id="recSuffix">-01_01_2025-0lines.txt</span>
+        </div>
+        <button class="btn-dl" style="background:#f97316;border-color:#f97316" id="recDlBtn">↓ Download</button>
+      </div>
+
+      <!-- No match section -->
+      <div class="recovery-no-match-section" id="recNoMatchSection">
+        <div class="output-header" style="margin-bottom:8px;margin-top:18px">
+          <div class="section-label" style="color:var(--danger);margin-bottom:0">// không tìm thấy mail KP</div>
+          <button class="btn-copy" id="recNoMatchCopyBtn" style="border-color:var(--danger);color:var(--danger)">Copy</button>
+        </div>
+        <textarea id="recoveryNoMatch" readonly placeholder="email|pass (không tìm thấy mail khôi phục)"></textarea>
+        <div class="dl-row">
+          <div class="dl-name-wrap">
+            <input class="dl-name-input" id="recNmFilename" type="text" placeholder="recovery_not_found" spellcheck="false"/>
+            <span class="dl-name-suffix" id="recNmSuffix">-01_01_2025-0lines.txt</span>
+          </div>
+          <button class="btn-dl" style="background:var(--danger);border-color:var(--danger)" id="recNmDlBtn">↓ Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-recovery -->
 // ── TAB SWITCH ────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + tab).classList.add('active');
-  document.querySelector('.tab-' + tab).classList.add('active');
+  const tabEl = document.querySelector('.tab-' + tab);
+  if (tabEl) tabEl.classList.add('active');
 }
 
 // ── FILE MATCHER ──────────────────────────────────────────────────────────────
@@ -1285,7 +1465,164 @@ function clearDedup() {
   ddupClean = []; ddupRemoved = [];
 }
 
-loadConfig();
+// ── RECOVERY MATCHER ─────────────────────────────────────────────────────────
+(function() {
+  const recFile1 = document.getElementById('recFile1');
+  const recFile2 = document.getElementById('recFile2');
+  const recProcessBtn = document.getElementById('recProcessBtn');
+
+  function checkRecFiles() {
+    recProcessBtn.disabled = !(recFile1.files[0] && recFile2.files[0]);
+  }
+
+  recFile1.addEventListener('change', () => {
+    document.getElementById('recFname1').textContent = recFile1.files[0]?.name || '';
+    checkRecFiles();
+  });
+  recFile2.addEventListener('change', () => {
+    document.getElementById('recFname2').textContent = recFile2.files[0]?.name || '';
+    checkRecFiles();
+  });
+
+  ['recZone1','recZone2'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', () => el.classList.remove('drag-over'));
+  });
+
+  const readFile = f => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsText(f);
+  });
+
+  recProcessBtn.addEventListener('click', () => {
+    document.getElementById('recErrorBox').style.display = 'none';
+    document.getElementById('recOutputSection').style.display = 'none';
+    document.getElementById('recStatsBar').style.display = 'none';
+    document.getElementById('recNoMatchSection').style.display = 'none';
+    recProcessBtn.disabled = true;
+    recProcessBtn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+
+    const sep1         = document.getElementById('recSep1').value || '|';
+    const sep2         = document.getElementById('recSep2').value || '|';
+    const outSep       = document.getElementById('recOutSep').value || '|';
+    const emailIdx1    = parseInt(document.getElementById('recEmailIdx1').value) || 0;
+    const emailIdx2    = parseInt(document.getElementById('recEmailIdx2').value) || 0;
+    const recoveryIdx  = parseInt(document.getElementById('recRecoveryIdx').value) || 4;
+    const f1ColsRaw    = document.getElementById('recF1Cols').value || '0,1';
+    const f1Cols       = f1ColsRaw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+
+    Promise.all([readFile(recFile1.files[0]), readFile(recFile2.files[0])]).then(([text1, text2]) => {
+      const file1Lines = text1.split(/\r?\n/).filter(l => l.trim());
+      const file2Lines = text2.split(/\r?\n/).filter(l => l.trim());
+
+      // Build map from File 2: email -> recovery mail (and all parts)
+      const file2Map = {};
+      for (const line of file2Lines) {
+        const parts = line.split(sep2);
+        const email = (parts[emailIdx2] || '').trim().toLowerCase();
+        if (email) {
+          file2Map[email] = parts;
+        }
+      }
+
+      const matched   = [];
+      const notFound  = [];
+
+      for (const line of file1Lines) {
+        const parts1 = line.split(sep1);
+        const email  = (parts1[emailIdx1] || '').trim().toLowerCase();
+        if (!email) continue;
+
+        if (file2Map[email]) {
+          const parts2     = file2Map[email];
+          const recoveryMail = (parts2[recoveryIdx] || '').trim();
+          // Build output from selected F1 columns + recovery mail
+          const outputCols = f1Cols.map(i => (parts1[i] || '').trim());
+          outputCols.push(recoveryMail);
+          matched.push(outputCols.join(outSep));
+        } else {
+          // No match — output original line
+          notFound.push(line.trim());
+        }
+      }
+
+      // Update stats
+      document.getElementById('recS1').textContent  = file1Lines.length;
+      document.getElementById('recS2').textContent  = file2Lines.length;
+      document.getElementById('recSm').textContent  = matched.length;
+      document.getElementById('recSnm').textContent = notFound.length;
+      document.getElementById('recStatsBar').style.display = 'grid';
+
+      // Output matched
+      document.getElementById('recoveryOutput').value = matched.join('\n') || '(Không tìm thấy kết quả khớp)';
+      document.getElementById('recOutputSection').style.display = 'block';
+      updateRecSuffix(matched.length);
+
+      // Output not found
+      if (notFound.length > 0) {
+        document.getElementById('recoveryNoMatch').value = notFound.join('\n');
+        document.getElementById('recNoMatchSection').style.display = 'block';
+        updateRecNmSuffix(notFound.length);
+      }
+
+    }).catch(e => {
+      const eb = document.getElementById('recErrorBox');
+      eb.textContent = '⚠ Lỗi: ' + e.message;
+      eb.style.display = 'block';
+    }).finally(() => {
+      recProcessBtn.innerHTML = '🔍 &nbsp;Khớp Mail Khôi Phục';
+      recProcessBtn.disabled = false;
+    });
+  });
+
+  document.getElementById('recCopyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('recoveryOutput').value);
+    const btn = document.getElementById('recCopyBtn');
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+
+  document.getElementById('recNoMatchCopyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('recoveryNoMatch').value);
+    const btn = document.getElementById('recNoMatchCopyBtn');
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+
+  document.getElementById('recDlBtn').addEventListener('click', () => {
+    const content = document.getElementById('recoveryOutput').value;
+    const lineCount = content.split('\n').filter(l => l.trim()).length;
+    const base = document.getElementById('recFilename').value.trim() || 'recovery_matched';
+    dlBlob(content, buildFilename(base, lineCount));
+  });
+
+  document.getElementById('recNmDlBtn').addEventListener('click', () => {
+    const content = document.getElementById('recoveryNoMatch').value;
+    const lineCount = content.split('\n').filter(l => l.trim()).length;
+    const base = document.getElementById('recNmFilename').value.trim() || 'recovery_not_found';
+    dlBlob(content, buildFilename(base, lineCount));
+  });
+
+  function updateRecSuffix(count) {
+    const now = new Date();
+    const d = String(now.getDate()).padStart(2,'0');
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const y = now.getFullYear();
+    document.getElementById('recSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+  }
+
+  function updateRecNmSuffix(count) {
+    const now = new Date();
+    const d = String(now.getDate()).padStart(2,'0');
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const y = now.getFullYear();
+    document.getElementById('recNmSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+  }
+})();
+
+
 </script>
 </body>
 </html>
