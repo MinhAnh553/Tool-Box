@@ -303,6 +303,34 @@
     }
     .recovery-drop-zone:hover,.recovery-drop-zone.drag-over{border-color:#f97316;background:rgba(249,115,22,0.04)}
     .recovery-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .rec-input-toggle{
+      display:flex;align-items:center;gap:8px;margin-bottom:12px;
+      font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;user-select:none;
+    }
+    .rec-input-toggle input[type=checkbox]{display:none}
+    .rec-toggle-track{
+      width:36px;height:18px;background:var(--border);border-radius:9px;
+      position:relative;transition:background 0.2s;flex-shrink:0;
+    }
+    .rec-toggle-track::after{
+      content:'';position:absolute;top:2px;left:2px;
+      width:14px;height:14px;background:#fff;border-radius:50%;transition:transform 0.2s;
+    }
+    .rec-input-toggle input:checked ~ .rec-toggle-track{background:#f97316}
+    .rec-input-toggle input:checked ~ .rec-toggle-track::after{transform:translateX(18px)}
+    .rec-data-area{display:none}
+    .rec-data-area.show{display:block}
+    .rec-data-area textarea{
+      width:100%;height:120px;background:#07090b;border:1px solid var(--border);border-radius:4px;
+      color:#fb923c;font-family:var(--mono);font-size:12px;padding:12px;resize:vertical;outline:none;
+      margin-top:8px;
+    }
+    .rec-data-area textarea:focus{border-color:#f97316}
+    .rec-zone-or{
+      display:flex;align-items:center;gap:10px;margin:10px 0;
+      font-family:var(--mono);font-size:11px;color:var(--muted);
+    }
+    .rec-zone-or::before,.rec-zone-or::after{content:'';flex:1;height:1px;background:var(--border)}
     .recovery-drop-icon{font-size:26px;margin-bottom:8px}
     .recovery-drop-title{font-weight:700;font-size:14px;color:#fff;margin-bottom:5px}
     .recovery-drop-format{
@@ -816,13 +844,13 @@
       </div>
       <div class="recovery-idx-group">
         <label>Cột email F1 (từ 0)</label>
-        <input type="number" id="recEmailIdx1" value="0" min="0" max="30"/>
+        <input type="number" id="recEmailIdx1" value="3" min="0" max="30"/>
       </div>
-      <div style="flex:1;min-width:120px">
+      <!-- <div style="flex:1;min-width:120px">
         <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Các cột lấy từ File 1 (output)</label>
         <input type="text" id="recF1Cols" value="0,1" placeholder="0,1" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;" title="Nhập chỉ số các cột cần lấy từ File 1, cách nhau bởi dấu phẩy. Ví dụ: 0,1"/>
         <div style="font-size:10px;color:var(--muted);margin-top:3px">Chỉ số cột (0,1,...) cách bởi dấu phẩy</div>
-      </div>
+      </div> -->
     </div>
     <div class="recovery-sep-row">
       <div class="recovery-sep-group">
@@ -848,7 +876,7 @@
         Output Format — <code style="color:#f97316">{f0}</code>, <code style="color:#f97316">{f1}</code>... cho File 1 &nbsp;|&nbsp; <code style="color:#fb923c">{f2_0}</code>, <code style="color:#fb923c">{f2_1}</code>... cho File 2
       </label>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <input type="text" id="recOutFmt" value="{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}" placeholder="{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}" style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        <input type="text" id="recOutFmt" value="{f0}|{f1}|{f2}|{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" placeholder="{f0}|{f1}|{f2}|{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         <div class="fmt-hint" style="white-space:nowrap;font-size:10px;color:var(--muted)">Preview:</div>
         <div class="fmt-preview" id="recFmtPreview" style="font-family:var(--mono);font-size:11px;color:#fb923c;white-space:nowrap"></div>
       </div>
@@ -867,6 +895,15 @@
           <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
           <div class="recovery-file-name" id="recFname1"></div>
         </div>
+        <div class="rec-zone-or">hoặc nhập trực tiếp</div>
+        <label class="rec-input-toggle">
+          <input type="checkbox" id="recUseInput1"/>
+          <div class="rec-toggle-track"></div>
+          <span>Nhập dữ liệu File 1</span>
+        </label>
+        <div class="rec-data-area" id="recDataArea1">
+          <textarea id="recData1" placeholder="email|pass&#10;user1@domain.com|pass1&#10;user2@domain.com|pass2"></textarea>
+        </div>
       </div>
       <div>
         <div class="recovery-drop-zone" id="recZone2">
@@ -876,6 +913,15 @@
           <div class="recovery-drop-format">email|pass|...|mail_khôi_phục</div>
           <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
           <div class="recovery-file-name" id="recFname2"></div>
+        </div>
+        <div class="rec-zone-or">hoặc nhập trực tiếp</div>
+        <label class="rec-input-toggle">
+          <input type="checkbox" id="recUseInput2"/>
+          <div class="rec-toggle-track"></div>
+          <span>Nhập dữ liệu File 2</span>
+        </label>
+        <div class="rec-data-area" id="recDataArea2">
+          <textarea id="recData2" placeholder="email|pass|...|mail_khôi_phục&#10;user1@domain.com|pass1|...|recovery1@domain.com"></textarea>
         </div>
       </div>
     </div>
@@ -1485,7 +1531,14 @@ function clearDedup() {
   const recProcessBtn = document.getElementById('recProcessBtn');
 
   function checkRecFiles() {
-    recProcessBtn.disabled = !(recFile1.files[0] && recFile2.files[0]);
+    const useInput1 = document.getElementById('recUseInput1')?.checked;
+    const useInput2 = document.getElementById('recUseInput2')?.checked;
+    const hasFile1 = recFile1.files[0];
+    const hasFile2 = recFile2.files[0];
+    const hasData1 = useInput1 && (document.getElementById('recData1')?.value.trim());
+    const hasData2 = useInput2 && (document.getElementById('recData2')?.value.trim());
+    const ready = (hasFile1 || hasData1) && (hasFile2 || hasData2);
+    recProcessBtn.disabled = !ready;
   }
 
   // ── Output format preview ──
@@ -1513,7 +1566,7 @@ function clearDedup() {
 
   document.getElementById('recOutFmt').addEventListener('input', updateRecFormatPreview);
   // Set default and trigger preview
-  document.getElementById('recOutFmt').value = '{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}';
+  document.getElementById('recOutFmt').value = '{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}';
   updateRecFormatPreview();
 
   // Sync f1Cols → recOutFmt placeholder
@@ -1541,6 +1594,20 @@ function clearDedup() {
     document.getElementById('recFname2').textContent = recFile2.files[0]?.name || '';
     checkRecFiles();
   });
+
+  // Toggle input mode
+  document.getElementById('recUseInput1')?.addEventListener('change', function() {
+    document.getElementById('recDataArea1').classList.toggle('show', this.checked);
+    document.getElementById('recZone1').style.display = this.checked ? 'none' : 'block';
+    checkRecFiles();
+  });
+  document.getElementById('recUseInput2')?.addEventListener('change', function() {
+    document.getElementById('recDataArea2').classList.toggle('show', this.checked);
+    document.getElementById('recZone2').style.display = this.checked ? 'none' : 'block';
+    checkRecFiles();
+  });
+  document.getElementById('recData1')?.addEventListener('input', checkRecFiles);
+  document.getElementById('recData2')?.addEventListener('input', checkRecFiles);
 
   ['recZone1','recZone2'].forEach(id => {
     const el = document.getElementById(id);
@@ -1573,7 +1640,13 @@ function clearDedup() {
     const f1ColsRaw    = document.getElementById('recF1Cols').value || '0,1';
     const f1Cols       = f1ColsRaw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
 
-    Promise.all([readFile(recFile1.files[0]), readFile(recFile2.files[0])]).then(([text1, text2]) => {
+    const useInput1 = document.getElementById('recUseInput1')?.checked;
+    const useInput2 = document.getElementById('recUseInput2')?.checked;
+
+    Promise.all([
+      useInput1 ? Promise.resolve(document.getElementById('recData1').value) : readFile(recFile1.files[0]),
+      useInput2 ? Promise.resolve(document.getElementById('recData2').value) : readFile(recFile2.files[0])
+    ]).then(([text1, text2]) => {
       const file1Lines = text1.split(/\r?\n/).filter(l => l.trim());
       const file2Lines = text2.split(/\r?\n/).filter(l => l.trim());
 
