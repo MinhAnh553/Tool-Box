@@ -876,7 +876,7 @@
         Output Format — <code style="color:#f97316">{f0}</code>, <code style="color:#f97316">{f1}</code>... cho File 1 &nbsp;|&nbsp; <code style="color:#fb923c">{f2_0}</code>, <code style="color:#fb923c">{f2_1}</code>... cho File 2
       </label>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <input type="text" id="recOutFmt" value="{f0}|{f1}|{f2}|{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" placeholder="{f0}|{f1}|{f2}|{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        <input type="text" id="recOutFmt" value="{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" placeholder="{f0}|{f1}|{f2}|{f2_0}|{f2_1}|{f2_2}|{f2_3}|{f2_4}" style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         <div class="fmt-hint" style="white-space:nowrap;font-size:10px;color:var(--muted)">Preview:</div>
         <div class="fmt-preview" id="recFmtPreview" style="font-family:var(--mono);font-size:11px;color:#fb923c;white-space:nowrap"></div>
       </div>
@@ -887,7 +887,7 @@
     <div class="section-label" style="color:#f97316">// 01 — upload files</div>
     <div class="recovery-grid">
       <div>
-        <div class="recovery-drop-zone" id="recZone1">
+        <div class="recovery-drop-zone" id="recZone1" style="display:none">
           <input type="file" id="recFile1" accept=".txt,.csv"/>
           <div class="recovery-drop-icon">📋</div>
           <div class="recovery-drop-title">File 1 — Danh sách cần tra</div>
@@ -897,16 +897,16 @@
         </div>
         <div class="rec-zone-or">hoặc nhập trực tiếp</div>
         <label class="rec-input-toggle">
-          <input type="checkbox" id="recUseInput1"/>
+          <input type="checkbox" id="recUseInput1" checked/>
           <div class="rec-toggle-track"></div>
           <span>Nhập dữ liệu File 1</span>
         </label>
-        <div class="rec-data-area" id="recDataArea1">
+        <div class="rec-data-area show" id="recDataArea1">
           <textarea id="recData1" placeholder="email|pass&#10;user1@domain.com|pass1&#10;user2@domain.com|pass2"></textarea>
         </div>
       </div>
       <div>
-        <div class="recovery-drop-zone" id="recZone2">
+        <div class="recovery-drop-zone" id="recZone2" style="display:none">
           <input type="file" id="recFile2" accept=".txt,.csv"/>
           <div class="recovery-drop-icon">🔑</div>
           <div class="recovery-drop-title">File 2 — Database có mail KP</div>
@@ -916,11 +916,11 @@
         </div>
         <div class="rec-zone-or">hoặc nhập trực tiếp</div>
         <label class="rec-input-toggle">
-          <input type="checkbox" id="recUseInput2"/>
+          <input type="checkbox" id="recUseInput2" checked/>
           <div class="rec-toggle-track"></div>
           <span>Nhập dữ liệu File 2</span>
         </label>
-        <div class="rec-data-area" id="recDataArea2">
+        <div class="rec-data-area show" id="recDataArea2">
           <textarea id="recData2" placeholder="email|pass|...|mail_khôi_phục&#10;user1@domain.com|pass1|...|recovery1@domain.com"></textarea>
         </div>
       </div>
@@ -1540,12 +1540,15 @@ function clearDedup() {
     const ready = (hasFile1 || hasData1) && (hasFile2 || hasData2);
     recProcessBtn.disabled = !ready;
   }
+  checkRecFiles();
 
   // ── Output format preview ──
   function updateRecFormatPreview() {
-    const fmt = document.getElementById('recOutFmt').value;
+    const fmtEl = document.getElementById('recOutFmt');
     const exampleEl = document.getElementById('recOutExample');
     const previewEl = document.getElementById('recFmtPreview');
+    if (!fmtEl || !exampleEl || !previewEl) return;
+    const fmt = fmtEl.value;
     if (!fmt) {
       previewEl.textContent = '';
       exampleEl.textContent = 'email|pass|mail_khôi_phục';
@@ -1558,6 +1561,7 @@ function clearDedup() {
       .replace(/\{f2_(\d+)\}/g, '<span style="color:#fb923c">{f2_$1}</span>');
     previewEl.innerHTML = html;
     // Update example in info box
+    if (!exampleEl) return;
     let eg = fmt
       .replace(/\{f(\d+)\}/g, 'f$1')
       .replace(/\{f2_(\d+)\}/g, 'f2_$1');
@@ -1572,7 +1576,9 @@ function clearDedup() {
   // Sync f1Cols → recOutFmt placeholder
   function syncRecF1ColsToFormat() {
     const el = document.getElementById('recF1Cols');
+    if (!el) return;
     const fmtEl = document.getElementById('recOutFmt');
+    if (!fmtEl) return;
     const outSep = document.getElementById('recOutSep').value || '|';
     const cols = (el.value || '0,1').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
     const autoFmt = cols.map((_, i) => `{f${i}}`).join(outSep) + outSep + `{f2_4}`;
@@ -1584,7 +1590,7 @@ function clearDedup() {
       updateRecFormatPreview();
     }
   }
-  document.getElementById('recF1Cols').addEventListener('input', syncRecF1ColsToFormat);
+  document.getElementById('recF1Cols')?.addEventListener('input', syncRecF1ColsToFormat);
 
   recFile1.addEventListener('change', () => {
     document.getElementById('recFname1').textContent = recFile1.files[0]?.name || '';
@@ -1637,7 +1643,7 @@ function clearDedup() {
     const emailIdx1    = parseInt(document.getElementById('recEmailIdx1').value) || 0;
     const emailIdx2    = parseInt(document.getElementById('recEmailIdx2').value) || 0;
     const recoveryIdx  = parseInt(document.getElementById('recRecoveryIdx').value) || 4;
-    const f1ColsRaw    = document.getElementById('recF1Cols').value || '0,1';
+    const f1ColsRaw    = document.getElementById('recF1Cols')?.value || '0,1';
     const f1Cols       = f1ColsRaw.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
 
     const useInput1 = document.getElementById('recUseInput1')?.checked;
