@@ -323,6 +323,7 @@
       width:100%;height:260px;background:#07090b;border:1px solid var(--border);border-radius:4px;
       color:#fb923c;font-family:var(--mono);font-size:12px;padding:14px;resize:vertical;outline:none;
     }
+    .rec-format-row{margin-bottom:16px;padding:12px 16px;background:rgba(249,115,22,0.04);border:1px solid rgba(249,115,22,0.15);border-radius:4px}
     .recovery-sep-row{display:flex;gap:12px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
     .recovery-sep-group{display:flex;flex-direction:column;gap:4px}
     .recovery-sep-group label{font-size:12px;color:var(--muted)}
@@ -459,7 +460,7 @@
     <div class="tab-dot"></div> Gộp File
   </button>
   <button class="tab-btn tab-email" onclick="switchTab('email')">
-    <div class="tab-dot"></div> Email Tools
+    <div class="tab-dot"></div> So Sánh
   </button>
   <button class="tab-btn tab-recovery" onclick="switchTab('recovery')">
     <div class="tab-dot"></div> Recovery Matcher
@@ -685,16 +686,16 @@
         <div class="email-box">
           <div class="email-box-hdr">
             <span class="email-box-label l1">List 1</span>
-            <span class="email-cnt" id="ecnt1">0 emails</span>
+            <span class="email-cnt" id="ecnt1">0 items</span>
           </div>
-          <textarea id="elist1" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng..."></textarea>
+          <textarea id="elist1" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item..."></textarea>
         </div>
         <div class="email-box">
           <div class="email-box-hdr">
             <span class="email-box-label l2">List 2</span>
-            <span class="email-cnt" id="ecnt2">0 emails</span>
+            <span class="email-cnt" id="ecnt2">0 items</span>
           </div>
-          <textarea id="elist2" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng..."></textarea>
+          <textarea id="elist2" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item..."></textarea>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -756,9 +757,9 @@
         <div class="email-box">
           <div class="email-box-hdr">
             <span class="email-box-label dedup-in">Danh sách nhập</span>
-            <span class="email-cnt" id="ddup-cnt-in">0 emails</span>
+            <span class="email-cnt" id="ddup-cnt-in">0 items</span>
           </div>
-          <textarea id="ddup-input" placeholder="Dán danh sách email vào đây&#10;Mỗi email 1 dòng&#10;&#10;Tool sẽ xóa các dòng trùng nhau."></textarea>
+          <textarea id="ddup-input" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item&#10;&#10;Tool sẽ xóa các dòng trùng nhau."></textarea>
         </div>
         <div class="email-box">
           <div class="email-box-hdr">
@@ -781,7 +782,7 @@
         <div class="email-stats-row">
           <div class="email-stat"><div class="email-stat-num c4" id="ddup-stat-total">0</div><div class="email-stat-label">Tổng dòng nhập</div></div>
           <div class="email-stat"><div class="email-stat-num c2" id="ddup-stat-removed">0</div><div class="email-stat-label">Dòng trùng xóa</div></div>
-          <div class="email-stat"><div class="email-stat-num c1" id="ddup-stat-clean">0</div><div class="email-stat-label">Email sạch</div></div>
+          <div class="email-stat"><div class="email-stat-num c1" id="ddup-stat-clean">0</div><div class="email-stat-label">Kết quả sạch</div></div>
         </div>
         <div class="erbox">
           <div class="erbox-hdr">
@@ -805,7 +806,7 @@
     <div class="recovery-info-box">
       <span>File 1</span> — định dạng: <span>email|pass</span> &nbsp;(hoặc bất kỳ format nào, cần chỉ vị trí cột email)<br>
       <span>File 2</span> — định dạng: <span>email|pass|refresh_token|client_id|mail_khôi_phục</span> &nbsp;(cần chỉ vị trí cột email &amp; cột mail khôi phục)<br>
-      <span>Output</span> — kết quả: <span>email|pass|mail_khôi_phục</span>
+      <span>Output</span> — kết quả: <span id="recOutExample">email|pass|mail_khôi_phục</span>
     </div>
 
     <div class="recovery-sep-row">
@@ -839,6 +840,17 @@
       <div style="flex:1;min-width:120px">
         <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">Output separator</label>
         <input type="text" id="recOutSep" value="|" maxlength="5" placeholder="|" style="width:60px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+      </div>
+    </div>
+
+    <div class="rec-format-row">
+      <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">
+        Output Format — <code style="color:#f97316">{f0}</code>, <code style="color:#f97316">{f1}</code>... cho File 1 &nbsp;|&nbsp; <code style="color:#fb923c">{f2_0}</code>, <code style="color:#fb923c">{f2_1}</code>... cho File 2
+      </label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input type="text" id="recOutFmt" value="{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}" placeholder="{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}" style="flex:1;min-width:200px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        <div class="fmt-hint" style="white-space:nowrap;font-size:10px;color:var(--muted)">Preview:</div>
+        <div class="fmt-preview" id="recFmtPreview" style="font-family:var(--mono);font-size:11px;color:#fb923c;white-space:nowrap"></div>
       </div>
     </div>
   </div>
@@ -1359,20 +1371,20 @@ function setEmailMode(mode) {
 }
 
 function parseEmailLines(text) {
-  return text.split('\n').map(e => e.trim().toLowerCase()).filter(e => e.length > 0 && e.includes('@'));
+  return text.split('\n').map(e => e.trim()).filter(e => e.length > 0);
 }
 
 document.getElementById('elist1').addEventListener('input', function() {
   const n = parseEmailLines(this.value).length;
-  document.getElementById('ecnt1').textContent = n + ' email' + (n!==1?'s':'');
+  document.getElementById('ecnt1').textContent = n + ' item' + (n!==1?'s':'');
 });
 document.getElementById('elist2').addEventListener('input', function() {
   const n = parseEmailLines(this.value).length;
-  document.getElementById('ecnt2').textContent = n + ' email' + (n!==1?'s':'');
+  document.getElementById('ecnt2').textContent = n + ' item' + (n!==1?'s':'');
 });
 document.getElementById('ddup-input').addEventListener('input', function() {
   const n = parseEmailLines(this.value).length;
-  document.getElementById('ddup-cnt-in').textContent = n + ' email' + (n!==1?'s':'');
+  document.getElementById('ddup-cnt-in').textContent = n + ' item' + (n!==1?'s':'');
 });
 
 function runCompare() {
@@ -1394,7 +1406,7 @@ function runCompare() {
 
 function renderErList(id, emails, dotColor) {
   const el = document.getElementById(id);
-  if (!emails.length) { el.innerHTML = '<div class="er-empty">Không có email nào</div>'; return; }
+  if (!emails.length) { el.innerHTML = '<div class="er-empty">Không có item nào</div>'; return; }
   el.innerHTML = emails.map(e =>
     `<div class="er-email-item"><span class="er-dot" style="background:${dotColor}"></span>${e}</div>`
   ).join('');
@@ -1440,7 +1452,7 @@ function runDedup() {
   const remEl = document.getElementById('ddup-removed-list');
   remEl.innerHTML = ddupRemoved.length
     ? ddupRemoved.map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--danger)"></span>${e}</div>`).join('')
-    : '<div class="er-empty">Không có email nào bị xóa 🎉</div>';
+    : '<div class="er-empty">Không có item nào bị xóa 🎉</div>';
   document.getElementById('ddup-results').classList.add('show');
 }
 
@@ -1475,6 +1487,51 @@ function clearDedup() {
   function checkRecFiles() {
     recProcessBtn.disabled = !(recFile1.files[0] && recFile2.files[0]);
   }
+
+  // ── Output format preview ──
+  function updateRecFormatPreview() {
+    const fmt = document.getElementById('recOutFmt').value;
+    const exampleEl = document.getElementById('recOutExample');
+    const previewEl = document.getElementById('recFmtPreview');
+    if (!fmt) {
+      previewEl.textContent = '';
+      exampleEl.textContent = 'email|pass|mail_khôi_phục';
+      return;
+    }
+    // Show escaped preview with placeholders highlighted
+    let html = fmt
+      .replace(/&/g, '&amp;').replace(/\x3c/g, '&lt;').replace(/\x3e/g, '&gt;')
+      .replace(/\{f(\d+)\}/g, '<span style="color:#f97316">{f$1}</span>')
+      .replace(/\{f2_(\d+)\}/g, '<span style="color:#fb923c">{f2_$1}</span>');
+    previewEl.innerHTML = html;
+    // Update example in info box
+    let eg = fmt
+      .replace(/\{f(\d+)\}/g, 'f$1')
+      .replace(/\{f2_(\d+)\}/g, 'f2_$1');
+    exampleEl.textContent = eg;
+  }
+
+  document.getElementById('recOutFmt').addEventListener('input', updateRecFormatPreview);
+  // Set default and trigger preview
+  document.getElementById('recOutFmt').value = '{f0}|{f1}|{f2_2}|{f2_3}|{f2_4}';
+  updateRecFormatPreview();
+
+  // Sync f1Cols → recOutFmt placeholder
+  function syncRecF1ColsToFormat() {
+    const el = document.getElementById('recF1Cols');
+    const fmtEl = document.getElementById('recOutFmt');
+    const outSep = document.getElementById('recOutSep').value || '|';
+    const cols = (el.value || '0,1').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+    const autoFmt = cols.map((_, i) => `{f${i}}`).join(outSep) + outSep + `{f2_4}`;
+    const current = fmtEl.value.trim();
+    // Also accept the new default format with f2_2 and f2_3
+    const newDefault = cols.map((_, i) => `{f${i}}`).join(outSep) + outSep + `{f2_2}|{f2_3}|{f2_4}`;
+    if (!current || current === autoFmt || current === newDefault) {
+      fmtEl.value = autoFmt;
+      updateRecFormatPreview();
+    }
+  }
+  document.getElementById('recF1Cols').addEventListener('input', syncRecF1ColsToFormat);
 
   recFile1.addEventListener('change', () => {
     document.getElementById('recFname1').textContent = recFile1.files[0]?.name || '';
@@ -1539,12 +1596,20 @@ function clearDedup() {
         if (!email) continue;
 
         if (file2Map[email]) {
-          const parts2     = file2Map[email];
-          const recoveryMail = (parts2[recoveryIdx] || '').trim();
-          // Build output from selected F1 columns + recovery mail
-          const outputCols = f1Cols.map(i => (parts1[i] || '').trim());
-          outputCols.push(recoveryMail);
-          matched.push(outputCols.join(outSep));
+          const parts2        = file2Map[email];
+          const recoveryMail  = (parts2[recoveryIdx] || '').trim();
+          let output;
+          const outFmt = document.getElementById('recOutFmt').value.trim();
+          if (outFmt) {
+            output = outFmt
+              .replace(/\{f2_(\d+)\}/g, (_, idx) => (parts2[parseInt(idx)] || '').trim())
+              .replace(/\{f(\d+)\}/g, (_, idx) => (parts1[parseInt(idx)] || '').trim());
+          } else {
+            const outputCols = f1Cols.map(i => (parts1[i] || '').trim());
+            outputCols.push((parts2[recoveryIdx] || '').trim());
+            output = outputCols.join(outSep);
+          }
+          matched.push(output);
         } else {
           // No match — output original line
           notFound.push(line.trim());
