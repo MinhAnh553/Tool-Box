@@ -717,6 +717,13 @@
             <span class="email-cnt" id="ecnt1">0 items</span>
           </div>
           <textarea id="elist1" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item..."></textarea>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <label class="er-copy-btn" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center">
+              Upload file
+              <input type="file" id="compareFile1" accept=".txt,.csv" style="display:none"/>
+            </label>
+            <span id="compareFile1Name" style="font-size:11px;color:var(--muted)"></span>
+          </div>
         </div>
         <div class="email-box">
           <div class="email-box-hdr">
@@ -724,6 +731,13 @@
             <span class="email-cnt" id="ecnt2">0 items</span>
           </div>
           <textarea id="elist2" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item..."></textarea>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <label class="er-copy-btn" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center">
+              Upload file
+              <input type="file" id="compareFile2" accept=".txt,.csv" style="display:none"/>
+            </label>
+            <span id="compareFile2Name" style="font-size:11px;color:var(--muted)"></span>
+          </div>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
@@ -748,6 +762,7 @@
         <button class="btn" style="flex:1" onclick="runCompare()">⚡ &nbsp;So sánh ngay</button>
         <button class="btn" style="flex:0 0 auto;background:var(--surface2);color:var(--muted);border:1px solid var(--border)" onclick="clearCompareEmail()">✕ Xóa</button>
       </div>
+      <div id="compareProgress" style="display:none;margin-top:10px;font-size:12px;color:var(--muted)"></div>
     </div>
 
     <div class="email-results-area" id="ecompare-results">
@@ -768,7 +783,11 @@
           <div class="erbox">
             <div class="erbox-hdr">
               <span class="erbox-title">Email trong List 1 không có trong List 2</span>
-              <button class="er-copy-btn" onclick="erCopy('unique', this)">Copy</button>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span id="erhint-unique" style="font-size:11px;color:var(--muted)"></span>
+                <button class="er-copy-btn" onclick="erCopy('unique', this)">Copy</button>
+                <button class="er-copy-btn" onclick="erDownload('unique')">Download</button>
+              </div>
             </div>
             <div class="er-email-list" id="erlist-unique"></div>
           </div>
@@ -777,7 +796,11 @@
           <div class="erbox">
             <div class="erbox-hdr">
               <span class="erbox-title">Email xuất hiện ở cả hai List</span>
-              <button class="er-copy-btn" onclick="erCopy('dup', this)">Copy</button>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span id="erhint-dup" style="font-size:11px;color:var(--muted)"></span>
+                <button class="er-copy-btn" onclick="erCopy('dup', this)">Copy</button>
+                <button class="er-copy-btn" onclick="erDownload('dup')">Download</button>
+              </div>
             </div>
             <div class="er-email-list" id="erlist-dup"></div>
           </div>
@@ -786,7 +809,11 @@
           <div class="erbox">
             <div class="erbox-hdr">
               <span class="erbox-title">Email trong List 2 không có trong List 1</span>
-              <button class="er-copy-btn" onclick="erCopy('l2only', this)">Copy</button>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <span id="erhint-l2only" style="font-size:11px;color:var(--muted)"></span>
+                <button class="er-copy-btn" onclick="erCopy('l2only', this)">Copy</button>
+                <button class="er-copy-btn" onclick="erDownload('l2only')">Download</button>
+              </div>
             </div>
             <div class="er-email-list" id="erlist-l2only"></div>
           </div>
@@ -806,11 +833,22 @@
             <span class="email-cnt" id="ddup-cnt-in">0 items</span>
           </div>
           <textarea id="ddup-input" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item&#10;&#10;Tool sẽ xóa các dòng trùng nhau."></textarea>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px">
+            <label class="er-copy-btn" style="cursor:pointer;display:inline-flex;align-items:center;justify-content:center">
+              Upload file
+              <input type="file" id="dedupFileInput" accept=".txt,.csv" style="display:none"/>
+            </label>
+            <span id="dedupFileName" style="font-size:11px;color:var(--muted)"></span>
+          </div>
         </div>
         <div class="email-box">
           <div class="email-box-hdr">
             <span class="email-box-label dedup-out">Kết quả sau lọc</span>
-            <button class="er-copy-btn" id="ddup-copy-clean-btn" onclick="ddupCopyClean(this)">Copy</button>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span id="ddup-hint-clean" style="font-size:11px;color:var(--muted)"></span>
+              <button class="er-copy-btn" id="ddup-copy-clean-btn" onclick="ddupCopyClean(this)">Copy</button>
+              <button class="er-copy-btn" onclick="ddupDownloadClean()">Download</button>
+            </div>
           </div>
           <div class="er-email-list" id="ddup-output-list" style="min-height:180px">
             <div class="er-empty">Nhấn "Lọc trùng" để xem kết quả</div>
@@ -831,6 +869,7 @@
         <button class="btn" style="flex:1;background:var(--accent2)" onclick="runDedup()">✦ &nbsp;Lọc trùng ngay</button>
         <button class="btn" style="flex:0 0 auto;background:var(--surface2);color:var(--muted);border:1px solid var(--border)" onclick="clearDedup()">✕ Xóa</button>
       </div>
+      <div id="dedupProgress" style="display:none;margin-top:10px;font-size:12px;color:var(--muted)"></div>
     </div>
 
     <div class="email-results-area" id="ddup-results">
@@ -843,7 +882,11 @@
         <div class="erbox">
           <div class="erbox-hdr">
             <span class="erbox-title" style="color:var(--danger)">Các email trùng đã bị loại</span>
-            <button class="er-copy-btn" onclick="ddupCopyRemoved(this)">Copy</button>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <span id="ddup-hint-removed" style="font-size:11px;color:var(--muted)"></span>
+              <button class="er-copy-btn" onclick="ddupCopyRemoved(this)">Copy</button>
+              <button class="er-copy-btn" onclick="ddupDownloadRemoved()">Download</button>
+            </div>
           </div>
           <div class="er-email-list" id="ddup-removed-list"></div>
         </div>
@@ -1436,6 +1479,106 @@ function dlMerge() {
 // ── EMAIL TOOLS ───────────────────────────────────────────────────────────────
 let erData = { unique: [], dup: [], l2only: [] };
 let ddupClean = [], ddupRemoved = [];
+const EMAIL_PREVIEW_LIMIT = 200;
+const EMAIL_LARGE_FILE_THRESHOLD = 2 * 1024 * 1024;
+const EMAIL_CHUNK_SIZE = 256 * 1024;
+const emailWorker = createEmailWorker();
+
+function createEmailWorker() {
+  const workerCode = `
+    self.onmessage = function(event) {
+      const { type, payload } = event.data;
+
+      function parseEmailLines(text) {
+        return text.split('\n').map(e => e.trim()).filter(e => e.length > 0);
+      }
+
+      function getLineKeyWithoutCookie(line, cookieCol) {
+        const parts = line.split('|');
+        if (cookieCol < 0 || cookieCol >= parts.length) return line;
+        return parts.filter((_, idx) => idx !== cookieCol).join('|');
+      }
+
+      function getLineKeyByColumn(line, columnIdx) {
+        const parts = line.split('|');
+        if (columnIdx < 0 || columnIdx >= parts.length) return line;
+        return (parts[columnIdx] || '').trim();
+      }
+
+      function normalizeLinesForCompare(lines, options = {}) {
+        const { ignoreCookie = false, cookieCol = 2, usernameOnly = false, usernameCol = 0 } = options;
+        return lines.map(line => ({
+          original: line,
+          key: usernameOnly
+            ? getLineKeyByColumn(line, usernameCol)
+            : (ignoreCookie ? getLineKeyWithoutCookie(line, cookieCol) : line),
+        }));
+      }
+
+      if (type === 'compare') {
+        const { list1Text, list2Text, compareOptions } = payload;
+        const l1 = parseEmailLines(list1Text);
+        const l2 = parseEmailLines(list2Text);
+        const n1 = normalizeLinesForCompare(l1, compareOptions);
+        const n2 = normalizeLinesForCompare(l2, compareOptions);
+        const s1 = new Set(n1.map(e => e.key));
+        const s2 = new Set(n2.map(e => e.key));
+        const unique = [...new Map(n1.filter(e => !s2.has(e.key)).map(e => [e.key, e.original])).values()];
+        const dup = [...new Map(n1.filter(e => s2.has(e.key)).map(e => [e.key, e.original])).values()];
+        const l2only = [...new Map(n2.filter(e => !s1.has(e.key)).map(e => [e.key, e.original])).values()];
+        self.postMessage({ type: 'compareResult', payload: { unique, dup, l2only } });
+        return;
+      }
+
+      if (type === 'dedup') {
+        const { inputText, ignoreCookie, cookieCol } = payload;
+        const raw = parseEmailLines(inputText);
+        const normalized = normalizeLinesForCompare(raw, { ignoreCookie, cookieCol });
+        const seen = new Set();
+        const dupes = [];
+        const clean = [];
+        normalized.forEach(item => {
+          if (seen.has(item.key)) {
+            dupes.push(item.original);
+          } else {
+            seen.add(item.key);
+            clean.push(item.original);
+          }
+        });
+        self.postMessage({ type: 'dedupResult', payload: { clean, dupes, total: raw.length } });
+      }
+    };
+  `;
+  const blob = new Blob([workerCode], { type: 'application/javascript' });
+  return new Worker(URL.createObjectURL(blob));
+}
+
+function runEmailWorker(type, payload, progressId, progressText) {
+  return new Promise((resolve, reject) => {
+    setEmailProgress(progressId, progressText);
+
+    const handleMessage = (event) => {
+      const message = event.data;
+      if (!message || !message.type) return;
+      if ((type === 'compare' && message.type !== 'compareResult') || (type === 'dedup' && message.type !== 'dedupResult')) return;
+      emailWorker.removeEventListener('message', handleMessage);
+      emailWorker.removeEventListener('error', handleError);
+      setEmailProgress(progressId, '');
+      resolve(message.payload);
+    };
+
+    const handleError = (error) => {
+      emailWorker.removeEventListener('message', handleMessage);
+      emailWorker.removeEventListener('error', handleError);
+      setEmailProgress(progressId, '');
+      reject(error);
+    };
+
+    emailWorker.addEventListener('message', handleMessage);
+    emailWorker.addEventListener('error', handleError);
+    emailWorker.postMessage({ type, payload });
+  });
+}
 
 function setEmailMode(mode) {
   document.getElementById('emailModeCompare').className = 'email-mode-btn' + (mode==='compare' ? ' active-compare' : '');
@@ -1446,28 +1589,6 @@ function setEmailMode(mode) {
 
 function parseEmailLines(text) {
   return text.split('\n').map(e => e.trim()).filter(e => e.length > 0);
-}
-
-function getLineKeyWithoutCookie(line, cookieCol) {
-  const parts = line.split('|');
-  if (cookieCol < 0 || cookieCol >= parts.length) return line;
-  return parts.filter((_, idx) => idx !== cookieCol).join('|');
-}
-
-function getLineKeyByColumn(line, columnIdx) {
-  const parts = line.split('|');
-  if (columnIdx < 0 || columnIdx >= parts.length) return line;
-  return (parts[columnIdx] || '').trim();
-}
-
-function normalizeLinesForCompare(lines, options = {}) {
-  const { ignoreCookie = false, cookieCol = 2, usernameOnly = false, usernameCol = 0 } = options;
-  return lines.map(line => ({
-    original: line,
-    key: usernameOnly
-      ? getLineKeyByColumn(line, usernameCol)
-      : (ignoreCookie ? getLineKeyWithoutCookie(line, cookieCol) : line),
-  }));
 }
 
 document.getElementById('elist1').addEventListener('input', function() {
@@ -1483,35 +1604,133 @@ document.getElementById('ddup-input').addEventListener('input', function() {
   document.getElementById('ddup-cnt-in').textContent = n + ' item' + (n!==1?'s':'');
 });
 
-function runCompare() {
-  const l1 = parseEmailLines(document.getElementById('elist1').value);
-  const l2 = parseEmailLines(document.getElementById('elist2').value);
-  const compareOptions = {
-    ignoreCookie: document.getElementById('compareIgnoreCookie')?.checked,
-    cookieCol: parseInt(document.getElementById('compareCookieCol')?.value || '2', 10),
-    usernameOnly: document.getElementById('compareUsernameOnly')?.checked,
-    usernameCol: parseInt(document.getElementById('compareUsernameCol')?.value || '0', 10),
-  };
-  const n1 = normalizeLinesForCompare(l1, compareOptions);
-  const n2 = normalizeLinesForCompare(l2, compareOptions);
-  const s1 = new Set(n1.map(e => e.key)), s2 = new Set(n2.map(e => e.key));
-  erData.unique = [...new Map(n1.filter(e => !s2.has(e.key)).map(e => [e.key, e.original])).values()];
-  erData.dup    = [...new Map(n1.filter(e => s2.has(e.key)).map(e => [e.key, e.original])).values()];
-  erData.l2only = [...new Map(n2.filter(e => !s1.has(e.key)).map(e => [e.key, e.original])).values()];
-  document.getElementById('estat-unique').textContent = erData.unique.length;
-  document.getElementById('estat-dup').textContent    = erData.dup.length;
-  document.getElementById('estat-l2only').textContent = erData.l2only.length;
-  renderErList('erlist-unique', erData.unique, 'var(--accent)');
-  renderErList('erlist-dup',    erData.dup,    'var(--danger)');
-  renderErList('erlist-l2only', erData.l2only, 'var(--accent2)');
-  document.getElementById('ecompare-results').classList.add('show');
-  switchErTab('unique');
+function updateEmailCount(textareaId, counterId) {
+  const n = parseEmailLines(document.getElementById(textareaId).value).length;
+  document.getElementById(counterId).textContent = n + ' item' + (n!==1?'s':'');
+}
+
+function setEmailProgress(id, text) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text || '';
+  el.style.display = text ? 'block' : 'none';
+}
+
+function readTextFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => resolve(e.target.result || '');
+    reader.onerror = reject;
+    reader.readAsText(file);
+  });
+}
+
+function readLargeTextFile(file, progressId) {
+  return new Promise((resolve, reject) => {
+    let offset = 0;
+    let content = '';
+    const reader = new FileReader();
+
+    reader.onerror = reject;
+    reader.onload = e => {
+      content += e.target.result || '';
+      offset += EMAIL_CHUNK_SIZE;
+      const percent = Math.min(100, Math.round((offset / file.size) * 100));
+      setEmailProgress(progressId, `Đang đọc file lớn: ${percent}%`);
+      if (offset < file.size) {
+        readNextChunk();
+      } else {
+        setEmailProgress(progressId, '');
+        resolve(content);
+      }
+    };
+
+    function readNextChunk() {
+      const chunk = file.slice(offset, offset + EMAIL_CHUNK_SIZE);
+      reader.readAsText(chunk);
+    }
+
+    readNextChunk();
+  });
+}
+
+async function readEmailToolFile(file, progressId) {
+  if (file.size >= EMAIL_LARGE_FILE_THRESHOLD) {
+    return readLargeTextFile(file, progressId);
+  }
+  return readTextFile(file);
+}
+
+function bindEmailFileInput(fileInputId, textareaId, counterId, nameId, progressId) {
+  const input = document.getElementById(fileInputId);
+  if (!input) return;
+  input.addEventListener('change', async function() {
+    const file = this.files?.[0];
+    document.getElementById(nameId).textContent = file?.name || '';
+    if (!file) return;
+    try {
+      setEmailProgress(progressId, file.size >= EMAIL_LARGE_FILE_THRESHOLD ? 'Chuẩn bị đọc file lớn...' : '');
+      document.getElementById(textareaId).value = await readEmailToolFile(file, progressId);
+      updateEmailCount(textareaId, counterId);
+    } catch {
+      alert('Không đọc được file. Vui lòng thử lại.');
+    } finally {
+      setEmailProgress(progressId, '');
+      this.value = '';
+    }
+  });
+}
+
+bindEmailFileInput('compareFile1', 'elist1', 'ecnt1', 'compareFile1Name', 'compareProgress');
+bindEmailFileInput('compareFile2', 'elist2', 'ecnt2', 'compareFile2Name', 'compareProgress');
+bindEmailFileInput('dedupFileInput', 'ddup-input', 'ddup-cnt-in', 'dedupFileName', 'dedupProgress');
+
+async function runCompare() {
+  try {
+    const compareOptions = {
+      ignoreCookie: document.getElementById('compareIgnoreCookie')?.checked,
+      cookieCol: parseInt(document.getElementById('compareCookieCol')?.value || '2', 10),
+      usernameOnly: document.getElementById('compareUsernameOnly')?.checked,
+      usernameCol: parseInt(document.getElementById('compareUsernameCol')?.value || '0', 10),
+    };
+    const result = await runEmailWorker('compare', {
+      list1Text: document.getElementById('elist1').value,
+      list2Text: document.getElementById('elist2').value,
+      compareOptions,
+    }, 'compareProgress', 'Đang xử lý dữ liệu bằng background worker...');
+
+    erData.unique = result.unique;
+    erData.dup = result.dup;
+    erData.l2only = result.l2only;
+    document.getElementById('estat-unique').textContent = erData.unique.length;
+    document.getElementById('estat-dup').textContent    = erData.dup.length;
+    document.getElementById('estat-l2only').textContent = erData.l2only.length;
+    renderErList('erlist-unique', erData.unique, 'var(--accent)');
+    renderErList('erlist-dup', erData.dup, 'var(--danger)');
+    renderErList('erlist-l2only', erData.l2only, 'var(--accent2)');
+    document.getElementById('ecompare-results').classList.add('show');
+    switchErTab('unique');
+  } catch {
+    setEmailProgress('compareProgress', '');
+    alert('Có lỗi khi xử lý compare. Vui lòng thử lại.');
+  }
+}
+
+function getPreviewHint(items) {
+  if (!items.length) return '';
+  return items.length > EMAIL_PREVIEW_LIMIT
+    ? `Hiển thị ${EMAIL_PREVIEW_LIMIT}/${items.length} dòng đầu`
+    : `Hiển thị đủ ${items.length} dòng`;
 }
 
 function renderErList(id, emails, dotColor) {
   const el = document.getElementById(id);
+  const type = id.replace('erlist-', '');
+  const hintEl = document.getElementById('erhint-' + type);
+  if (hintEl) hintEl.textContent = getPreviewHint(emails);
   if (!emails.length) { el.innerHTML = '<div class="er-empty">Không có item nào</div>'; return; }
-  el.innerHTML = emails.map(e =>
+  const preview = emails.slice(0, EMAIL_PREVIEW_LIMIT);
+  el.innerHTML = preview.map(e =>
     `<div class="er-email-item"><span class="er-dot" style="background:${dotColor}"></span>${e}</div>`
   ).join('');
 }
@@ -1530,44 +1749,57 @@ function erCopy(type, btn) {
   });
 }
 
+function erDownload(type) {
+  const content = erData[type].join('\n');
+  const lineCount = erData[type].length;
+  const base = type === 'unique' ? 'compare_list1_only' : type === 'dup' ? 'compare_duplicates' : 'compare_list2_only';
+  dlBlob(content, buildFilename(base, lineCount));
+}
+
 function clearCompareEmail() {
   document.getElementById('elist1').value = '';
   document.getElementById('elist2').value = '';
+  document.getElementById('compareFile1Name').textContent = '';
+  document.getElementById('compareFile2Name').textContent = '';
   document.getElementById('ecnt1').textContent = '0 emails';
   document.getElementById('ecnt2').textContent = '0 emails';
   document.getElementById('ecompare-results').classList.remove('show');
+  document.getElementById('erhint-unique').textContent = '';
+  document.getElementById('erhint-dup').textContent = '';
+  document.getElementById('erhint-l2only').textContent = '';
+  setEmailProgress('compareProgress', '');
   erData = { unique: [], dup: [], l2only: [] };
 }
 
-function runDedup() {
-  const raw = parseEmailLines(document.getElementById('ddup-input').value);
-  const ignoreCookie = document.getElementById('dedupIgnoreCookie')?.checked;
-  const cookieCol = parseInt(document.getElementById('dedupCookieCol')?.value || '2', 10);
-  const normalized = normalizeLinesForCompare(raw, ignoreCookie, cookieCol);
-  const seen = new Set(), dupes = [], clean = [];
-  normalized.forEach(item => {
-    if (seen.has(item.key)) {
-      dupes.push(item.original);
-    } else {
-      seen.add(item.key);
-      clean.push(item.original);
-    }
-  });
-  ddupClean   = clean;
-  ddupRemoved = dupes;
-  const removed = raw.length - ddupClean.length;
-  document.getElementById('ddup-stat-total').textContent   = raw.length;
-  document.getElementById('ddup-stat-removed').textContent = removed;
-  document.getElementById('ddup-stat-clean').textContent   = ddupClean.length;
-  const outEl = document.getElementById('ddup-output-list');
-  outEl.innerHTML = ddupClean.length
-    ? ddupClean.map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--accent)"></span>${e}</div>`).join('')
-    : '<div class="er-empty">Không có email nào</div>';
-  const remEl = document.getElementById('ddup-removed-list');
-  remEl.innerHTML = ddupRemoved.length
-    ? ddupRemoved.map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--danger)"></span>${e}</div>`).join('')
-    : '<div class="er-empty">Không có item nào bị xóa 🎉</div>';
-  document.getElementById('ddup-results').classList.add('show');
+async function runDedup() {
+  try {
+    const result = await runEmailWorker('dedup', {
+      inputText: document.getElementById('ddup-input').value,
+      ignoreCookie: document.getElementById('dedupIgnoreCookie')?.checked,
+      cookieCol: parseInt(document.getElementById('dedupCookieCol')?.value || '2', 10),
+    }, 'dedupProgress', 'Đang xử lý dữ liệu bằng background worker...');
+
+    ddupClean = result.clean;
+    ddupRemoved = result.dupes;
+    const removed = result.total - ddupClean.length;
+    document.getElementById('ddup-stat-total').textContent   = result.total;
+    document.getElementById('ddup-stat-removed').textContent = removed;
+    document.getElementById('ddup-stat-clean').textContent   = ddupClean.length;
+    const outEl = document.getElementById('ddup-output-list');
+    document.getElementById('ddup-hint-clean').textContent = getPreviewHint(ddupClean);
+    outEl.innerHTML = ddupClean.length
+      ? ddupClean.slice(0, EMAIL_PREVIEW_LIMIT).map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--accent)"></span>${e}</div>`).join('')
+      : '<div class="er-empty">Không có email nào</div>';
+    const remEl = document.getElementById('ddup-removed-list');
+    document.getElementById('ddup-hint-removed').textContent = getPreviewHint(ddupRemoved);
+    remEl.innerHTML = ddupRemoved.length
+      ? ddupRemoved.slice(0, EMAIL_PREVIEW_LIMIT).map(e => `<div class="er-email-item"><span class="er-dot" style="background:var(--danger)"></span>${e}</div>`).join('')
+      : '<div class="er-empty">Không có item nào bị xóa 🎉</div>';
+    document.getElementById('ddup-results').classList.add('show');
+  } catch {
+    setEmailProgress('dedupProgress', '');
+    alert('Có lỗi khi xử lý lọc trùng. Vui lòng thử lại.');
+  }
 }
 
 function ddupCopyClean(btn) {
@@ -1577,6 +1809,10 @@ function ddupCopyClean(btn) {
   });
 }
 
+function ddupDownloadClean() {
+  dlBlob(ddupClean.join('\n'), buildFilename('dedup_clean', ddupClean.length));
+}
+
 function ddupCopyRemoved(btn) {
   navigator.clipboard.writeText(ddupRemoved.join('\n')).then(() => {
     btn.textContent = '✓ Copied'; btn.classList.add('copied');
@@ -1584,11 +1820,20 @@ function ddupCopyRemoved(btn) {
   });
 }
 
+function ddupDownloadRemoved() {
+  dlBlob(ddupRemoved.join('\n'), buildFilename('dedup_removed', ddupRemoved.length));
+}
+
 function clearDedup() {
   document.getElementById('ddup-input').value = '';
+  document.getElementById('dedupFileName').textContent = '';
   document.getElementById('ddup-cnt-in').textContent = '0 emails';
   document.getElementById('ddup-output-list').innerHTML = '<div class="er-empty">Nhấn "Lọc trùng" để xem kết quả</div>';
+  document.getElementById('ddup-removed-list').innerHTML = '';
+  document.getElementById('ddup-hint-clean').textContent = '';
+  document.getElementById('ddup-hint-removed').textContent = '';
   document.getElementById('ddup-results').classList.remove('show');
+  setEmailProgress('dedupProgress', '');
   ddupClean = []; ddupRemoved = [];
 }
 
