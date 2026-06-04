@@ -864,6 +864,14 @@
           <label for="dedupCookieCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Cookie ở cột</label>
           <input type="number" id="dedupCookieCol" value="3" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="dedupUsernameOnly"/>
+          <span>Chỉ so cột username</span>
+        </label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label for="dedupUsernameCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Username ở cột</label>
+          <input type="number" id="dedupUsernameCol" value="0" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn" style="flex:1;background:var(--accent2)" onclick="runDedup()">✦ &nbsp;Lọc trùng ngay</button>
@@ -1573,14 +1581,14 @@ function createEmailWorker() {
       }
 
       if (type === 'dedup') {
-        const { inputText, ignoreCookie, cookieCol } = payload;
+        const { inputText, ignoreCookie, cookieCol, usernameOnly, usernameCol } = payload;
         const raw = parseEmailLines(inputText);
         const latestByKey = new Map();
         const progressStep = Math.max(1, Math.floor(raw.length / 20));
 
         for (let i = 0; i < raw.length; i++) {
           const line = raw[i];
-          const key = buildKey(line, { ignoreCookie, cookieCol });
+          const key = buildKey(line, { ignoreCookie, cookieCol, usernameOnly, usernameCol });
           latestByKey.set(key, line);
           if ((i + 1) % progressStep === 0 || i === raw.length - 1) {
             postProgress('dedup', i + 1, raw.length, 'Đang lọc trùng');
@@ -1593,7 +1601,7 @@ function createEmailWorker() {
 
         for (let i = 0; i < raw.length; i++) {
           const line = raw[i];
-          const key = buildKey(line, { ignoreCookie, cookieCol });
+          const key = buildKey(line, { ignoreCookie, cookieCol, usernameOnly, usernameCol });
           const latestLine = latestByKey.get(key);
           if (line === latestLine && !emitted.has(key)) {
             emitted.add(key);
@@ -1861,6 +1869,8 @@ async function runDedup() {
       inputText: document.getElementById('ddup-input').value,
       ignoreCookie: document.getElementById('dedupIgnoreCookie')?.checked,
       cookieCol: parseInt(document.getElementById('dedupCookieCol')?.value || '3', 10),
+      usernameOnly: document.getElementById('dedupUsernameOnly')?.checked,
+      usernameCol: parseInt(document.getElementById('dedupUsernameCol')?.value || '0', 10),
     }, 'dedupProgress', 'Đang xử lý dữ liệu bằng background worker...');
 
     ddupClean = result.clean;
