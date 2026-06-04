@@ -1575,22 +1575,31 @@ function createEmailWorker() {
       if (type === 'dedup') {
         const { inputText, ignoreCookie, cookieCol } = payload;
         const raw = parseEmailLines(inputText);
-        const seen = new Set();
-        const dupes = [];
-        const clean = [];
+        const latestByKey = new Map();
         const progressStep = Math.max(1, Math.floor(raw.length / 20));
 
         for (let i = 0; i < raw.length; i++) {
           const line = raw[i];
           const key = buildKey(line, { ignoreCookie, cookieCol });
-          if (seen.has(key)) {
-            dupes.push(line);
-          } else {
-            seen.add(key);
-            clean.push(line);
-          }
+          latestByKey.set(key, line);
           if ((i + 1) % progressStep === 0 || i === raw.length - 1) {
             postProgress('dedup', i + 1, raw.length, 'Đang lọc trùng');
+          }
+        }
+
+        const clean = [];
+        const dupes = [];
+        const emitted = new Set();
+
+        for (let i = 0; i < raw.length; i++) {
+          const line = raw[i];
+          const key = buildKey(line, { ignoreCookie, cookieCol });
+          const latestLine = latestByKey.get(key);
+          if (line === latestLine && !emitted.has(key)) {
+            emitted.add(key);
+            clean.push(line);
+          } else {
+            dupes.push(line);
           }
         }
 
