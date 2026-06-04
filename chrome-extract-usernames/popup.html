@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-width: 300px;
+      max-width: 400px;
+      background: #1a1a2e;
+      color: #eee;
+    }
+    .header {
+      background: #16213e;
+      padding: 15px;
+      border-bottom: 1px solid #0f3460;
+    }
+    .header h1 {
+      font-size: 16px;
+      color: #e94560;
+      margin-bottom: 5px;
+    }
+    .header p {
+      font-size: 12px;
+      color: #888;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 15px;
+      background: #16213e;
+      border-bottom: 1px solid #0f3460;
+    }
+    .toolbar button {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-copy-all {
+      background: #e94560;
+      color: white;
+    }
+    .btn-copy-all:hover {
+      background: #d63850;
+    }
+    .btn-refresh {
+      background: #0f3460;
+      color: #eee;
+    }
+    .btn-refresh:hover {
+      background: #1a4a7a;
+    }
+    .stats {
+      padding: 8px 15px;
+      background: #0f3460;
+      font-size: 12px;
+      color: #aaa;
+    }
+    .username-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .username-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .username-list::-webkit-scrollbar-track {
+      background: #1a1a2e;
+    }
+    .username-list::-webkit-scrollbar-thumb {
+      background: #0f3460;
+      border-radius: 3px;
+    }
+    .username-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #0f3460;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .username-item:hover {
+      background: #16213e;
+    }
+    .username-item .stt {
+      width: 30px;
+      color: #666;
+      font-size: 12px;
+    }
+    .username-item .username {
+      flex: 1;
+      color: #00d9ff;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+    .username-item .copy-icon {
+      color: #666;
+      font-size: 14px;
+      margin-left: 10px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .username-item:hover .copy-icon {
+      opacity: 1;
+    }
+    .username-item .copy-icon.copied {
+      color: #4ade80;
+      opacity: 1;
+    }
+    .empty {
+      padding: 40px 15px;
+      text-align: center;
+      color: #666;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4ade80;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Extract Instagram Usernames</h1>
+    <p>Click username to copy</p>
+  </div>
+  
+  <div class="toolbar">
+    <button class="btn-refresh" id="btnRefresh">Làm mới</button>
+    <button class="btn-copy-all" id="btnCopyAll">Copy tất cả</button>
+  </div>
+  
+  <div class="stats" id="stats"></div>
+  
+  <div class="username-list" id="usernameList"></div>
+  
+  <div class="toast" id="toast">Đã copy!</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

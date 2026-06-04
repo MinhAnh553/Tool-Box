@@ -726,6 +726,24 @@
           <textarea id="elist2" placeholder="Dán danh sách vào đây&#10;Mỗi dòng 1 item..."></textarea>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="compareIgnoreCookie"/>
+          <span>Bỏ qua cookie khi so sánh</span>
+        </label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label for="compareCookieCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Cookie ở cột</label>
+          <input type="number" id="compareCookieCol" value="2" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="compareUsernameOnly"/>
+          <span>Chỉ so cột username</span>
+        </label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label for="compareUsernameCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Username ở cột</label>
+          <input type="number" id="compareUsernameCol" value="0" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+        </div>
+      </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         <button class="btn" style="flex:1" onclick="runCompare()">⚡ &nbsp;So sánh ngay</button>
         <button class="btn" style="flex:0 0 auto;background:var(--surface2);color:var(--muted);border:1px solid var(--border)" onclick="clearCompareEmail()">✕ Xóa</button>
@@ -797,6 +815,16 @@
           <div class="er-email-list" id="ddup-output-list" style="min-height:180px">
             <div class="er-empty">Nhấn "Lọc trùng" để xem kết quả</div>
           </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="dedupIgnoreCookie"/>
+          <span>Bỏ qua cookie khi lọc trùng</span>
+        </label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <label for="dedupCookieCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Cookie ở cột</label>
+          <input type="number" id="dedupCookieCol" value="2" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1420,6 +1448,28 @@ function parseEmailLines(text) {
   return text.split('\n').map(e => e.trim()).filter(e => e.length > 0);
 }
 
+function getLineKeyWithoutCookie(line, cookieCol) {
+  const parts = line.split('|');
+  if (cookieCol < 0 || cookieCol >= parts.length) return line;
+  return parts.filter((_, idx) => idx !== cookieCol).join('|');
+}
+
+function getLineKeyByColumn(line, columnIdx) {
+  const parts = line.split('|');
+  if (columnIdx < 0 || columnIdx >= parts.length) return line;
+  return (parts[columnIdx] || '').trim();
+}
+
+function normalizeLinesForCompare(lines, options = {}) {
+  const { ignoreCookie = false, cookieCol = 2, usernameOnly = false, usernameCol = 0 } = options;
+  return lines.map(line => ({
+    original: line,
+    key: usernameOnly
+      ? getLineKeyByColumn(line, usernameCol)
+      : (ignoreCookie ? getLineKeyWithoutCookie(line, cookieCol) : line),
+  }));
+}
+
 document.getElementById('elist1').addEventListener('input', function() {
   const n = parseEmailLines(this.value).length;
   document.getElementById('ecnt1').textContent = n + ' item' + (n!==1?'s':'');
@@ -1436,10 +1486,18 @@ document.getElementById('ddup-input').addEventListener('input', function() {
 function runCompare() {
   const l1 = parseEmailLines(document.getElementById('elist1').value);
   const l2 = parseEmailLines(document.getElementById('elist2').value);
-  const s1 = new Set(l1), s2 = new Set(l2);
-  erData.unique = [...new Set(l1.filter(e => !s2.has(e)))];
-  erData.dup    = [...new Set(l1.filter(e => s2.has(e)))];
-  erData.l2only = [...new Set(l2.filter(e => !s1.has(e)))];
+  const compareOptions = {
+    ignoreCookie: document.getElementById('compareIgnoreCookie')?.checked,
+    cookieCol: parseInt(document.getElementById('compareCookieCol')?.value || '2', 10),
+    usernameOnly: document.getElementById('compareUsernameOnly')?.checked,
+    usernameCol: parseInt(document.getElementById('compareUsernameCol')?.value || '0', 10),
+  };
+  const n1 = normalizeLinesForCompare(l1, compareOptions);
+  const n2 = normalizeLinesForCompare(l2, compareOptions);
+  const s1 = new Set(n1.map(e => e.key)), s2 = new Set(n2.map(e => e.key));
+  erData.unique = [...new Map(n1.filter(e => !s2.has(e.key)).map(e => [e.key, e.original])).values()];
+  erData.dup    = [...new Map(n1.filter(e => s2.has(e.key)).map(e => [e.key, e.original])).values()];
+  erData.l2only = [...new Map(n2.filter(e => !s1.has(e.key)).map(e => [e.key, e.original])).values()];
   document.getElementById('estat-unique').textContent = erData.unique.length;
   document.getElementById('estat-dup').textContent    = erData.dup.length;
   document.getElementById('estat-l2only').textContent = erData.l2only.length;
@@ -1483,10 +1541,20 @@ function clearCompareEmail() {
 
 function runDedup() {
   const raw = parseEmailLines(document.getElementById('ddup-input').value);
-  const seen = new Set(), dupes = new Set();
-  raw.forEach(e => { if (seen.has(e)) dupes.add(e); else seen.add(e); });
-  ddupClean   = [...seen];
-  ddupRemoved = [...dupes];
+  const ignoreCookie = document.getElementById('dedupIgnoreCookie')?.checked;
+  const cookieCol = parseInt(document.getElementById('dedupCookieCol')?.value || '2', 10);
+  const normalized = normalizeLinesForCompare(raw, ignoreCookie, cookieCol);
+  const seen = new Set(), dupes = [], clean = [];
+  normalized.forEach(item => {
+    if (seen.has(item.key)) {
+      dupes.push(item.original);
+    } else {
+      seen.add(item.key);
+      clean.push(item.original);
+    }
+  });
+  ddupClean   = clean;
+  ddupRemoved = dupes;
   const removed = raw.length - ddupClean.length;
   document.getElementById('ddup-stat-total').textContent   = raw.length;
   document.getElementById('ddup-stat-removed').textContent = removed;

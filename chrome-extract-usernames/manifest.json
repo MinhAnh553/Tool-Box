@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Extract Instagram Usernames",
+  "version": "1.0",
+  "description": "Extract usernames from table and copy with one click",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab"]
+}
