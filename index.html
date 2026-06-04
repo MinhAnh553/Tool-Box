@@ -747,7 +747,7 @@
         </label>
         <div style="display:flex;align-items:center;gap:8px">
           <label for="compareCookieCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Cookie ở cột</label>
-          <input type="number" id="compareCookieCol" value="2" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+          <input type="number" id="compareCookieCol" value="3" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         </div>
         <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)">
           <input type="checkbox" id="compareUsernameOnly"/>
@@ -862,7 +862,7 @@
         </label>
         <div style="display:flex;align-items:center;gap:8px">
           <label for="dedupCookieCol" style="font-size:12px;color:var(--muted);white-space:nowrap">Cookie ở cột</label>
-          <input type="number" id="dedupCookieCol" value="2" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
+          <input type="number" id="dedupCookieCol" value="3" min="0" max="50" style="width:90px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:var(--mono);font-size:12px;padding:7px 10px;outline:none;"/>
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -1479,10 +1479,11 @@ function dlMerge() {
 // ── EMAIL TOOLS ───────────────────────────────────────────────────────────────
 let erData = { unique: [], dup: [], l2only: [] };
 let ddupClean = [], ddupRemoved = [];
+let emailWorker = createEmailWorker();
 const EMAIL_PREVIEW_LIMIT = 200;
 const EMAIL_LARGE_FILE_THRESHOLD = 2 * 1024 * 1024;
 const EMAIL_CHUNK_SIZE = 256 * 1024;
-const emailWorker = createEmailWorker();
+const EMAIL_WORKER_TIMEOUT_MS = 120000;
 
 function createEmailWorker() {
   const workerCode = `
@@ -1490,7 +1491,7 @@ function createEmailWorker() {
       const { type, payload } = event.data;
 
       function parseEmailLines(text) {
-        return text.split('\n').map(e => e.trim()).filter(e => e.length > 0);
+        return text.split('\\n').map(e => e.trim()).filter(e => e.length > 0);
       }
 
       function getLineKeyWithoutCookie(line, cookieCol) {
@@ -1505,27 +1506,68 @@ function createEmailWorker() {
         return (parts[columnIdx] || '').trim();
       }
 
-      function normalizeLinesForCompare(lines, options = {}) {
-        const { ignoreCookie = false, cookieCol = 2, usernameOnly = false, usernameCol = 0 } = options;
-        return lines.map(line => ({
-          original: line,
-          key: usernameOnly
-            ? getLineKeyByColumn(line, usernameCol)
-            : (ignoreCookie ? getLineKeyWithoutCookie(line, cookieCol) : line),
-        }));
+      function buildKey(line, options = {}) {
+        const { ignoreCookie = false, cookieCol = 3, usernameOnly = false, usernameCol = 0 } = options;
+        if (usernameOnly) return getLineKeyByColumn(line, usernameCol);
+        return ignoreCookie ? getLineKeyWithoutCookie(line, cookieCol) : line;
+      }
+
+      function postProgress(kind, current, total, label) {
+        const safeTotal = Math.max(total || 1, 1);
+        const percent = Math.min(100, Math.round((current / safeTotal) * 100));
+        self.postMessage({ type: 'progress', payload: { kind, percent, label } });
       }
 
       if (type === 'compare') {
         const { list1Text, list2Text, compareOptions } = payload;
         const l1 = parseEmailLines(list1Text);
         const l2 = parseEmailLines(list2Text);
-        const n1 = normalizeLinesForCompare(l1, compareOptions);
-        const n2 = normalizeLinesForCompare(l2, compareOptions);
-        const s1 = new Set(n1.map(e => e.key));
-        const s2 = new Set(n2.map(e => e.key));
-        const unique = [...new Map(n1.filter(e => !s2.has(e.key)).map(e => [e.key, e.original])).values()];
-        const dup = [...new Map(n1.filter(e => s2.has(e.key)).map(e => [e.key, e.original])).values()];
-        const l2only = [...new Map(n2.filter(e => !s1.has(e.key)).map(e => [e.key, e.original])).values()];
+        const list2Keys = new Set();
+        const list1Keys = new Set();
+        const seenUnique = new Set();
+        const seenDup = new Set();
+        const seenL2Only = new Set();
+        const unique = [];
+        const dup = [];
+        const l2only = [];
+        const progressStepL2 = Math.max(1, Math.floor(l2.length / 20));
+        const progressStepL1 = Math.max(1, Math.floor(l1.length / 20));
+
+        for (let i = 0; i < l2.length; i++) {
+          const key = buildKey(l2[i], compareOptions);
+          list2Keys.add(key);
+          if ((i + 1) % progressStepL2 === 0 || i === l2.length - 1) {
+            postProgress('compare', i + 1, l2.length, 'Đang lập chỉ mục List 2');
+          }
+        }
+
+        for (let i = 0; i < l1.length; i++) {
+          const line = l1[i];
+          const key = buildKey(line, compareOptions);
+          list1Keys.add(key);
+          if (list2Keys.has(key)) {
+            if (!seenDup.has(key)) {
+              seenDup.add(key);
+              dup.push(line);
+            }
+          } else if (!seenUnique.has(key)) {
+            seenUnique.add(key);
+            unique.push(line);
+          }
+          if ((i + 1) % progressStepL1 === 0 || i === l1.length - 1) {
+            postProgress('compare', i + 1, l1.length, 'Đang so sánh List 1');
+          }
+        }
+
+        for (let i = 0; i < l2.length; i++) {
+          const line = l2[i];
+          const key = buildKey(line, compareOptions);
+          if (!list1Keys.has(key) && !seenL2Only.has(key)) {
+            seenL2Only.add(key);
+            l2only.push(line);
+          }
+        }
+
         self.postMessage({ type: 'compareResult', payload: { unique, dup, l2only } });
         return;
       }
@@ -1533,18 +1575,25 @@ function createEmailWorker() {
       if (type === 'dedup') {
         const { inputText, ignoreCookie, cookieCol } = payload;
         const raw = parseEmailLines(inputText);
-        const normalized = normalizeLinesForCompare(raw, { ignoreCookie, cookieCol });
         const seen = new Set();
         const dupes = [];
         const clean = [];
-        normalized.forEach(item => {
-          if (seen.has(item.key)) {
-            dupes.push(item.original);
+        const progressStep = Math.max(1, Math.floor(raw.length / 20));
+
+        for (let i = 0; i < raw.length; i++) {
+          const line = raw[i];
+          const key = buildKey(line, { ignoreCookie, cookieCol });
+          if (seen.has(key)) {
+            dupes.push(line);
           } else {
-            seen.add(item.key);
-            clean.push(item.original);
+            seen.add(key);
+            clean.push(line);
           }
-        });
+          if ((i + 1) % progressStep === 0 || i === raw.length - 1) {
+            postProgress('dedup', i + 1, raw.length, 'Đang lọc trùng');
+          }
+        }
+
         self.postMessage({ type: 'dedupResult', payload: { clean, dupes, total: raw.length } });
       }
     };
@@ -1553,23 +1602,49 @@ function createEmailWorker() {
   return new Worker(URL.createObjectURL(blob));
 }
 
+function resetEmailWorker() {
+  try {
+    emailWorker?.terminate();
+  } catch {}
+  emailWorker = createEmailWorker();
+}
+
 function runEmailWorker(type, payload, progressId, progressText) {
   return new Promise((resolve, reject) => {
+    resetEmailWorker();
     setEmailProgress(progressId, progressText);
+
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      resetEmailWorker();
+      setEmailProgress(progressId, '');
+      reject(new Error('Worker timeout'));
+    }, EMAIL_WORKER_TIMEOUT_MS);
+
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      emailWorker.removeEventListener('message', handleMessage);
+      emailWorker.removeEventListener('error', handleError);
+    };
 
     const handleMessage = (event) => {
       const message = event.data;
       if (!message || !message.type) return;
+      if (message.type === 'progress') {
+        if (message.payload?.kind === type) {
+          const label = message.payload.label || progressText;
+          setEmailProgress(progressId, label + ' ' + message.payload.percent + '%');
+        }
+        return;
+      }
       if ((type === 'compare' && message.type !== 'compareResult') || (type === 'dedup' && message.type !== 'dedupResult')) return;
-      emailWorker.removeEventListener('message', handleMessage);
-      emailWorker.removeEventListener('error', handleError);
+      cleanup();
       setEmailProgress(progressId, '');
       resolve(message.payload);
     };
 
     const handleError = (error) => {
-      emailWorker.removeEventListener('message', handleMessage);
-      emailWorker.removeEventListener('error', handleError);
+      cleanup();
       setEmailProgress(progressId, '');
       reject(error);
     };
@@ -1689,7 +1764,7 @@ async function runCompare() {
   try {
     const compareOptions = {
       ignoreCookie: document.getElementById('compareIgnoreCookie')?.checked,
-      cookieCol: parseInt(document.getElementById('compareCookieCol')?.value || '2', 10),
+      cookieCol: parseInt(document.getElementById('compareCookieCol')?.value || '3', 10),
       usernameOnly: document.getElementById('compareUsernameOnly')?.checked,
       usernameCol: parseInt(document.getElementById('compareUsernameCol')?.value || '0', 10),
     };
@@ -1776,7 +1851,7 @@ async function runDedup() {
     const result = await runEmailWorker('dedup', {
       inputText: document.getElementById('ddup-input').value,
       ignoreCookie: document.getElementById('dedupIgnoreCookie')?.checked,
-      cookieCol: parseInt(document.getElementById('dedupCookieCol')?.value || '2', 10),
+      cookieCol: parseInt(document.getElementById('dedupCookieCol')?.value || '3', 10),
     }, 'dedupProgress', 'Đang xử lý dữ liệu bằng background worker...');
 
     ddupClean = result.clean;
