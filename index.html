@@ -196,6 +196,9 @@
     .tab-btn.tab-recovery.active::after{background:linear-gradient(90deg,#f97316,#ef4444)}
     .tab-btn.tab-recovery.active{color:#f97316}
 
+    .tab-btn.tab-subtract.active::after{background:linear-gradient(90deg,#06b6d4,#ec4899)}
+    .tab-btn.tab-subtract.active{color:#06b6d4}
+
     /* ── EMAIL TOOLS PANEL ── */
     .email-mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
     .email-mode-btn{
@@ -295,6 +298,7 @@
 
     /* ── RECOVERY MATCHER PANEL ── */
     .card.recovery-top::before{background:linear-gradient(90deg,#f97316,#ef4444)}
+    .card.subtract-top::before{background:linear-gradient(90deg,#06b6d4,#ec4899)}
     .recovery-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
     @media(max-width:620px){.recovery-grid{grid-template-columns:1fr}}
     .recovery-drop-zone{
@@ -492,6 +496,9 @@
   </button>
   <button class="tab-btn tab-recovery" onclick="switchTab('recovery')">
     <div class="tab-dot"></div> Recovery Matcher
+  </button>
+  <button class="tab-btn tab-subtract" onclick="switchTab('subtract')">
+    <div class="tab-dot"></div> Trừ File
   </button>
 </div>
 
@@ -1048,6 +1055,99 @@
   </div>
 
 </div><!-- /panel-recovery -->
+
+<!-- ══════════════ SUBTRACT PANEL ══════════════ -->
+<div class="panel" id="panel-subtract">
+  <div class="card subtract-top">
+    <div class="section-label" style="color:#06b6d4">// ⚙ cấu hình đơn giản</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+      <div>
+        <label style="font-size:12px;color:var(--muted)">Ký tự phân cách (separator)</label>
+        <input type="text" id="subSep" value="|" maxlength="5" placeholder="|" style="width:120px"/>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted)">Cột dùng để so khớp (bắt đầu từ 0)</label>
+        <input type="number" id="subCol" value="0" min="0" max="50" style="width:120px"/>
+      </div>
+    </div>
+    <div class="recovery-info-box" style="border-color:rgba(6,182,212,0.2);background:rgba(6,182,212,0.06);color:var(--muted)">
+      <span style="color:#06b6d4">File 1</span> — dữ liệu gốc cần lọc &nbsp;|&nbsp;
+      <span style="color:#06b6d4">File 2</span> — dữ liệu cần loại bỏ (so khớp theo cột đã chọn)
+    </div>
+  </div>
+
+  <div class="card subtract-top">
+    <div class="section-label" style="color:#06b6d4">// 01 — upload files</div>
+    <div class="recovery-grid">
+      <div>
+        <div class="recovery-drop-zone" id="subZone1" style="display:none">
+          <input type="file" id="subFile1" accept=".txt,.csv"/>
+          <div class="recovery-drop-icon">📋</div>
+          <div class="recovery-drop-title">File 1 — Dữ liệu gốc</div>
+          <div class="recovery-drop-format">a|b|c|d</div>
+          <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
+          <div class="recovery-file-name" id="subFname1"></div>
+        </div>
+        <div class="rec-zone-or">hoặc nhập trực tiếp</div>
+        <label class="rec-input-toggle">
+          <input type="checkbox" id="subUseInput1" checked/>
+          <div class="rec-toggle-track"></div>
+          <span>Nhập dữ liệu File 1</span>
+        </label>
+        <div class="rec-data-area show" id="subDataArea1">
+          <textarea id="subData1" placeholder="a|b|c|d&#10;c|d|e|f&#10;g|h|i|j"></textarea>
+        </div>
+      </div>
+      <div>
+        <div class="recovery-drop-zone" id="subZone2" style="display:none">
+          <input type="file" id="subFile2" accept=".txt,.csv"/>
+          <div class="recovery-drop-icon">🚫</div>
+          <div class="recovery-drop-title">File 2 — Dữ liệu cần loại bỏ</div>
+          <div class="recovery-drop-format">a</div>
+          <div class="recovery-drop-hint">Kéo thả hoặc click để chọn</div>
+          <div class="recovery-file-name" id="subFname2"></div>
+        </div>
+        <div class="rec-zone-or">hoặc nhập trực tiếp</div>
+        <label class="rec-input-toggle">
+          <input type="checkbox" id="subUseInput2" checked/>
+          <div class="rec-toggle-track"></div>
+          <span>Nhập dữ liệu File 2</span>
+        </label>
+        <div class="rec-data-area show" id="subDataArea2">
+          <textarea id="subData2" placeholder="a"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="subProcessBtn" style="background:#06b6d4" disabled>➖ &nbsp;Trừ File</button>
+    <div class="error-box" id="subErrorBox"></div>
+  </div>
+
+  <div class="card subtract-top" id="subStatsCard" style="display:none">
+    <div class="recovery-stats-bar" id="subStatsBar" style="display:none;grid-template-columns:repeat(4,1fr)">
+      <div class="recovery-stat-box"><div class="recovery-stat-num" id="subS1">0</div><div class="recovery-stat-label">File 1 records</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num" id="subS2">0</div><div class="recovery-stat-label">File 2 records</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num" id="subSremoved" style="color:var(--danger)">0</div><div class="recovery-stat-label">Đã loại bỏ</div></div>
+      <div class="recovery-stat-box"><div class="recovery-stat-num green" id="subSkept">0</div><div class="recovery-stat-label">Còn lại ✓</div></div>
+    </div>
+  </div>
+
+  <div class="card subtract-top" id="subOutputCard" style="display:none">
+    <div class="output-header" style="margin-bottom:10px">
+      <div class="section-label" style="color:#06b6d4;margin-bottom:0">// 02 — kết quả còn lại</div>
+      <button class="btn-copy" id="subCopyBtn" style="border-color:#06b6d4;color:#06b6d4">Copy</button>
+    </div>
+    <textarea id="subOutput" readonly placeholder="Kết quả sẽ hiển thị ở đây..." style="color:#06b6d4"></textarea>
+    <div class="dl-row">
+      <div class="dl-name-wrap">
+        <input class="dl-name-input" id="subFilename" type="text" placeholder="subtracted_output" spellcheck="false"/>
+        <span class="dl-name-suffix" id="subSuffix">-01_01_2025-0lines.txt</span>
+      </div>
+      <button class="btn-dl" id="subDlBtn" style="background:#06b6d4;border-color:#06b6d4">↓ Download</button>
+    </div>
+  </div>
+</div><!-- /panel-subtract -->
+
 <script>
 // ── TAB SWITCH ────────────────────────────────────────────────────────────────
 function switchTab(tab) {
@@ -2175,6 +2275,141 @@ function clearDedup() {
 })();
 
 
+// ── SUBTRACT FILE ────────────────────────────────────────────────────────────
+(function() {
+  const subFile1 = document.getElementById('subFile1');
+  const subFile2 = document.getElementById('subFile2');
+  const subProcessBtn = document.getElementById('subProcessBtn');
+
+  function checkSubFiles() {
+    const useInput1 = document.getElementById('subUseInput1')?.checked;
+    const useInput2 = document.getElementById('subUseInput2')?.checked;
+    const hasFile1 = subFile1.files[0];
+    const hasFile2 = subFile2.files[0];
+    const hasData1 = useInput1 && (document.getElementById('subData1')?.value.trim());
+    const hasData2 = useInput2 && (document.getElementById('subData2')?.value.trim());
+    subProcessBtn.disabled = !((hasFile1 || hasData1) && (hasFile2 || hasData2));
+  }
+  checkSubFiles();
+
+  subFile1.addEventListener('change', () => {
+    document.getElementById('subFname1').textContent = subFile1.files[0]?.name || '';
+    checkSubFiles();
+  });
+  subFile2.addEventListener('change', () => {
+    document.getElementById('subFname2').textContent = subFile2.files[0]?.name || '';
+    checkSubFiles();
+  });
+
+  document.getElementById('subUseInput1')?.addEventListener('change', function() {
+    document.getElementById('subDataArea1').classList.toggle('show', this.checked);
+    document.getElementById('subZone1').style.display = this.checked ? 'none' : 'block';
+    checkSubFiles();
+  });
+  document.getElementById('subUseInput2')?.addEventListener('change', function() {
+    document.getElementById('subDataArea2').classList.toggle('show', this.checked);
+    document.getElementById('subZone2').style.display = this.checked ? 'none' : 'block';
+    checkSubFiles();
+  });
+  document.getElementById('subData1')?.addEventListener('input', checkSubFiles);
+  document.getElementById('subData2')?.addEventListener('input', checkSubFiles);
+
+  ['subZone1','subZone2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', () => el.classList.remove('drag-over'));
+  });
+
+  const readFile = f => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsText(f);
+  });
+
+  subProcessBtn.addEventListener('click', () => {
+    document.getElementById('subErrorBox').style.display = 'none';
+    document.getElementById('subOutputCard').style.display = 'none';
+    document.getElementById('subStatsCard').style.display = 'none';
+    subProcessBtn.disabled = true;
+    subProcessBtn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
+
+    const sep = document.getElementById('subSep').value || '|';
+    const col = parseInt(document.getElementById('subCol').value) || 0;
+    const useInput1 = document.getElementById('subUseInput1')?.checked;
+    const useInput2 = document.getElementById('subUseInput2')?.checked;
+
+    Promise.all([
+      useInput1 ? Promise.resolve(document.getElementById('subData1').value) : readFile(subFile1.files[0]),
+      useInput2 ? Promise.resolve(document.getElementById('subData2').value) : readFile(subFile2.files[0])
+    ]).then(([text1, text2]) => {
+      const file1Lines = text1.split(/\r?\n/).filter(l => l.length > 0);
+      const file2Lines = text2.split(/\r?\n/).filter(l => l.length > 0);
+
+      // Build Set of keys from File 2 at the chosen column
+      const removeSet = new Set();
+      for (const line of file2Lines) {
+        const parts = line.split(sep);
+        const key = (parts[col] != null ? parts[col] : '').trim();
+        if (key) removeSet.add(key.toLowerCase());
+      }
+
+      // Keep File 1 lines whose key is NOT in removeSet
+      const kept = [];
+      let removed = 0;
+      for (const line of file1Lines) {
+        const parts = line.split(sep);
+        const key = (parts[col] != null ? parts[col] : '').trim().toLowerCase();
+        if (removeSet.has(key)) {
+          removed++;
+        } else {
+          kept.push(line.replace(/[\r]+$/, ''));
+        }
+      }
+
+      document.getElementById('subS1').textContent = file1Lines.length;
+      document.getElementById('subS2').textContent = file2Lines.length;
+      document.getElementById('subSremoved').textContent = removed;
+      document.getElementById('subSkept').textContent = kept.length;
+      document.getElementById('subStatsBar').style.display = 'grid';
+      document.getElementById('subStatsCard').style.display = 'block';
+
+      document.getElementById('subOutput').value = kept.join('\n') || '(Không có dòng nào còn lại)';
+      document.getElementById('subOutputCard').style.display = 'block';
+      updateSubSuffix(kept.length);
+    }).catch(e => {
+      const eb = document.getElementById('subErrorBox');
+      eb.textContent = '⚠ Lỗi: ' + e.message;
+      eb.style.display = 'block';
+    }).finally(() => {
+      subProcessBtn.innerHTML = '➖ &nbsp;Loại bỏ';
+      subProcessBtn.disabled = false;
+    });
+  });
+
+  document.getElementById('subCopyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('subOutput').value);
+    const btn = document.getElementById('subCopyBtn');
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+
+  document.getElementById('subDlBtn').addEventListener('click', () => {
+    const content = document.getElementById('subOutput').value;
+    const lineCount = content.split('\n').filter(l => l.trim()).length;
+    const base = document.getElementById('subFilename').value.trim() || 'subtracted_output';
+    dlBlob(content, buildFilename(base, lineCount));
+  });
+
+  function updateSubSuffix(count) {
+    const now = new Date();
+    const d = String(now.getDate()).padStart(2,'0');
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const y = now.getFullYear();
+    document.getElementById('subSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+  }
+})();
 </script>
 </body>
 </html>
