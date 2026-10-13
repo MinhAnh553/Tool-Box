@@ -1149,6 +1149,19 @@
       </div>
       <button class="btn-dl" id="subDlBtn" style="background:#06b6d4;border-color:#06b6d4">↓ Download</button>
     </div>
+
+    <div class="output-header" style="margin-bottom:10px;margin-top:18px">
+      <div class="section-label" style="color:var(--danger);margin-bottom:0">// 03 — kết quả bị loại</div>
+      <button class="btn-copy" id="subCopyRemovedBtn" style="border-color:var(--danger);color:var(--danger)">Copy</button>
+    </div>
+    <textarea id="subRemovedOutput" readonly placeholder="Các dòng bị loại sẽ hiển thị ở đây..." style="color:var(--danger)"></textarea>
+    <div class="dl-row">
+      <div class="dl-name-wrap">
+        <input class="dl-name-input" id="subRemovedFilename" type="text" placeholder="subtracted_removed" spellcheck="false"/>
+        <span class="dl-name-suffix" id="subRemovedSuffix">-01_01_2025-0lines.txt</span>
+      </div>
+      <button class="btn-dl" id="subRemovedDlBtn" style="background:var(--danger);border-color:var(--danger)">↓ Download</button>
+    </div>
   </div>
 </div><!-- /panel-subtract -->
 
@@ -2363,20 +2376,21 @@ function clearDedup() {
 
       // Keep File 1 lines whose key at col1 is NOT in removeSet
       const kept = [];
-      let removed = 0;
+      const removedLines = [];
       for (const line of file1Lines) {
         const parts = line.split(sep);
         const key = (parts[col1] != null ? parts[col1] : '').trim().toLowerCase();
+        const cleanLine = line.replace(/[\r]+$/, '');
         if (removeSet.has(key)) {
-          removed++;
+          removedLines.push(cleanLine);
         } else {
-          kept.push(line.replace(/[\r]+$/, ''));
+          kept.push(cleanLine);
         }
       }
 
       document.getElementById('subS1').textContent = file1Lines.length;
       document.getElementById('subS2').textContent = file2Lines.length;
-      document.getElementById('subSremoved').textContent = removed;
+      document.getElementById('subSremoved').textContent = removedLines.length;
       document.getElementById('subSkept').textContent = kept.length;
       document.getElementById('subStatsBar').style.display = 'grid';
       document.getElementById('subStatsCard').style.display = 'block';
@@ -2384,6 +2398,9 @@ function clearDedup() {
       document.getElementById('subOutput').value = kept.join('\n') || '(Không có dòng nào còn lại)';
       document.getElementById('subOutputCard').style.display = 'block';
       updateSubSuffix(kept.length);
+
+      document.getElementById('subRemovedOutput').value = removedLines.join('\n') || '(Không có dòng nào bị loại)';
+      updateSubRemovedSuffix(removedLines.length);
     }).catch(e => {
       const eb = document.getElementById('subErrorBox');
       eb.textContent = '⚠ Lỗi: ' + e.message;
@@ -2407,12 +2424,33 @@ function clearDedup() {
     dlBlob(content, buildFilename(base, lineCount));
   });
 
+  document.getElementById('subCopyRemovedBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('subRemovedOutput').value);
+    const btn = document.getElementById('subCopyRemovedBtn');
+    btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+
+  document.getElementById('subRemovedDlBtn').addEventListener('click', () => {
+    const content = document.getElementById('subRemovedOutput').value;
+    const lineCount = content.split('\n').filter(l => l.trim()).length;
+    const base = document.getElementById('subRemovedFilename').value.trim() || 'subtracted_removed';
+    dlBlob(content, buildFilename(base, lineCount));
+  });
+
   function updateSubSuffix(count) {
     const now = new Date();
     const d = String(now.getDate()).padStart(2,'0');
     const m = String(now.getMonth()+1).padStart(2,'0');
     const y = now.getFullYear();
     document.getElementById('subSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
+  }
+
+  function updateSubRemovedSuffix(count) {
+    const now = new Date();
+    const d = String(now.getDate()).padStart(2,'0');
+    const m = String(now.getMonth()+1).padStart(2,'0');
+    const y = now.getFullYear();
+    document.getElementById('subRemovedSuffix').textContent = `-${d}_${m}_${y}-${count}lines.txt`;
   }
 })();
 </script>
