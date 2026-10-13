@@ -1060,19 +1060,23 @@
 <div class="panel" id="panel-subtract">
   <div class="card subtract-top">
     <div class="section-label" style="color:#06b6d4">// ⚙ cấu hình đơn giản</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px">
       <div>
         <label style="font-size:12px;color:var(--muted)">Ký tự phân cách (separator)</label>
         <input type="text" id="subSep" value="|" maxlength="5" placeholder="|" style="width:120px"/>
       </div>
       <div>
-        <label style="font-size:12px;color:var(--muted)">Cột dùng để so khớp (bắt đầu từ 0)</label>
-        <input type="number" id="subCol" value="0" min="0" max="50" style="width:120px"/>
+        <label style="font-size:12px;color:var(--muted)">Cột so khớp File 1 (từ 0)</label>
+        <input type="number" id="subCol1" value="1" min="0" max="50" style="width:120px"/>
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted)">Cột so khớp File 2 (từ 0)</label>
+        <input type="number" id="subCol2" value="0" min="0" max="50" style="width:120px"/>
       </div>
     </div>
     <div class="recovery-info-box" style="border-color:rgba(6,182,212,0.2);background:rgba(6,182,212,0.06);color:var(--muted)">
-      <span style="color:#06b6d4">File 1</span> — dữ liệu gốc cần lọc &nbsp;|&nbsp;
-      <span style="color:#06b6d4">File 2</span> — dữ liệu cần loại bỏ (so khớp theo cột đã chọn)
+      <span style="color:#06b6d4">File 1</span> — so khớp cột <span style="color:#06b6d4">1</span> &nbsp;|&nbsp;
+      <span style="color:#06b6d4">File 2</span> — so khớp cột <span style="color:#06b6d4">0</span>
     </div>
   </div>
 
@@ -1095,7 +1099,7 @@
           <span>Nhập dữ liệu File 1</span>
         </label>
         <div class="rec-data-area show" id="subDataArea1">
-          <textarea id="subData1" placeholder="a|b|c|d&#10;c|d|e|f&#10;g|h|i|j"></textarea>
+          <textarea id="subData1" placeholder="user1|pass1|extra1&#10;user2|pass2|extra2&#10;user3|pass3|extra3"></textarea>
         </div>
       </div>
       <div>
@@ -1114,7 +1118,7 @@
           <span>Nhập dữ liệu File 2</span>
         </label>
         <div class="rec-data-area show" id="subDataArea2">
-          <textarea id="subData2" placeholder="a"></textarea>
+          <textarea id="subData2" placeholder="user1&#10;user3"></textarea>
         </div>
       </div>
     </div>
@@ -2337,7 +2341,8 @@ function clearDedup() {
     subProcessBtn.innerHTML = '<span class="spinner"></span> Đang xử lý...';
 
     const sep = document.getElementById('subSep').value || '|';
-    const col = parseInt(document.getElementById('subCol').value) || 0;
+    const col1 = parseInt(document.getElementById('subCol1').value) || 0;
+    const col2 = parseInt(document.getElementById('subCol2').value) || 0;
     const useInput1 = document.getElementById('subUseInput1')?.checked;
     const useInput2 = document.getElementById('subUseInput2')?.checked;
 
@@ -2348,20 +2353,20 @@ function clearDedup() {
       const file1Lines = text1.split(/\r?\n/).filter(l => l.length > 0);
       const file2Lines = text2.split(/\r?\n/).filter(l => l.length > 0);
 
-      // Build Set of keys from File 2 at the chosen column
+      // Build Set of keys from File 2 at col2
       const removeSet = new Set();
       for (const line of file2Lines) {
         const parts = line.split(sep);
-        const key = (parts[col] != null ? parts[col] : '').trim();
+        const key = (parts[col2] != null ? parts[col2] : '').trim();
         if (key) removeSet.add(key.toLowerCase());
       }
 
-      // Keep File 1 lines whose key is NOT in removeSet
+      // Keep File 1 lines whose key at col1 is NOT in removeSet
       const kept = [];
       let removed = 0;
       for (const line of file1Lines) {
         const parts = line.split(sep);
-        const key = (parts[col] != null ? parts[col] : '').trim().toLowerCase();
+        const key = (parts[col1] != null ? parts[col1] : '').trim().toLowerCase();
         if (removeSet.has(key)) {
           removed++;
         } else {
